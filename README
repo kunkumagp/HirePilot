@@ -1,1 +1,21 @@
-HirePilot - AI Job Search Platform
+# HirePilot
+
+HirePilot is an AI-powered job search and application assistant designed for scalability, maintainability, and a polished SaaS experience.
+
+## Repository structure
+- backend: Laravel 12 API and service layer
+- frontend: React + TypeScript + Vite client
+- docs: architecture, API, and database planning
+- docker-compose.yml: local MySQL and Redis services
+
+## Getting started
+1. Install PHP dependencies: `cd backend && composer install`
+2. Install frontend dependencies: `cd frontend && npm install`
+3. Start local services: `docker compose up -d mysql redis`
+4. Run the backend: `cd backend && php artisan serve`
+5. Run the frontend: `cd frontend && npm run dev`
+
+## Current status
+- Laravel backend scaffolded with a health endpoint
+- React frontend scaffolded with a landing page
+- Architecture and planning docs created
