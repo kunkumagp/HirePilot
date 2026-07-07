@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\ResumeController;
 use App\Http\Controllers\Api\V1\SessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,5 +52,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::name('account.')->prefix('account')->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('delete');
+    });
+
+    Route::name('resumes.')->prefix('resumes')->group(function () {
+        Route::get('/', [ResumeController::class, 'index'])->name('index');
+        Route::post('/', [ResumeController::class, 'store'])->name('store');
+        Route::get('/trash', [ResumeController::class, 'trash'])->name('trash');
+        Route::get('/{resume}', [ResumeController::class, 'show'])->name('show');
+        Route::put('/{resume}', [ResumeController::class, 'update'])->name('update');
+        Route::delete('/{resume}', [ResumeController::class, 'destroy'])->name('destroy');
+        Route::post('/{resume}/versions', [ResumeController::class, 'versions'])->name('versions.store');
+        Route::put('/{resume}/versions/{version}/activate', [ResumeController::class, 'activateVersion'])->name('versions.activate');
+        Route::put('/{resume}/versions/{version}/content', [ResumeController::class, 'updateParsedContent'])->name('versions.content');
+        Route::get('/{resume}/versions/{version}/download', [ResumeController::class, 'download'])->name('versions.download');
+        Route::post('/{resume}/restore', [ResumeController::class, 'restore'])->name('restore');
+        Route::delete('/{resume}/force', [ResumeController::class, 'forceDelete'])->name('force-delete');
     });
 });

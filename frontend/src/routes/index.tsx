@@ -9,6 +9,10 @@ import { VerifyEmailPage } from '../pages/VerifyEmailPage';
 import { ProfilePage } from '../features/settings/ProfilePage';
 import { PasswordPage } from '../features/settings/PasswordPage';
 import { SessionsPage } from '../features/settings/SessionsPage';
+import { ResumeListPage } from '../features/resume/ResumeListPage';
+import { ResumeCreatePage } from '../features/resume/ResumeCreatePage';
+import { ResumeDetailPage } from '../features/resume/ResumeDetailPage';
+import { ResumeTrashPage } from '../features/resume/ResumeTrashPage';
 import App from '../App';
 import { useAuthStore } from '../stores/auth-store';
 
@@ -98,6 +102,22 @@ export const router = createBrowserRouter([
       {
         path: 'settings/sessions',
         element: <SessionsPage />,
+      },
+      {
+        path: 'resumes',
+        element: <ResumeListPage />,
+      },
+      {
+        path: 'resumes/new',
+        element: <ResumeCreatePage />,
+      },
+      {
+        path: 'resumes/:uuid',
+        element: <ResumeDetailPage />,
+      },
+      {
+        path: 'resumes/trash',
+        element: <ResumeTrashPage />,
       },
     ],
   },
