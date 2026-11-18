@@ -60,7 +60,7 @@
 
 ```
 1. fetch_all_sources()        → එක් එක් source එකෙන් එක් වරක් විතරක් ගන්නවා (rate limits රකින්න)
-                                 → global `jobs` table එකට upsert කරනවා (dedupe සහිතව)
+                                 → global `job_postings` table එකට upsert කරනවා (dedupe සහිතව)
 2. for each active user:
      load settings (defaults + user overrides)
      → filter pipeline (freshness, title, blacklist, location, salary)
@@ -100,11 +100,11 @@ HirePilot/
 ├── app/
 │   ├── Models/
 │   │   ├── User.php
-│   │   ├── Job.php
+│   │   ├── JobPosting.php           # global job_postings table එකට (Laravel queue `jobs` එක්ක නොපැටලෙන්න)
 │   │   ├── UserJob.php
 │   │   ├── UserSetting.php
 │   │   ├── UserChannel.php
-│   │   └── AppNotification.php
+│   │   └── NotificationDelivery.php # audit log (standard `notifications` එක in-app සඳහා වෙන් කරලා)
 │   ├── DTO/JobData.php              # readonly DTO (මුල් Job dataclass එකට සමාන)
 │   ├── Services/
 │   │   ├── Sources/
@@ -161,10 +161,12 @@ HirePilot/
 | `users` | id, name, email (unique), password, portfolio_url, email_verified_at, is_active, created_at, updated_at | Laravel default + portfolio_url, is_active |
 | `user_settings` | user_id (PK/FK), skills (json), title_include (json), exclude_words (json), location_accept (json), location_reject (json), max_age_days, min_salary_usd_yearly, allow_unknown_salary (bool), min_score, weights (json), max_notifications_per_run | `config/jobhunter.php` defaults එකෙන් seed වෙනවා; UI එකෙන් override කරන්න පුළුවන් |
 | `user_channels` | id, user_id, type (`telegram`/`email`/`inapp`), enabled, target (chat_id හෝ email), credentials (encrypted json), verified_at | එක user කෙනෙක්ට channels කිහිපයක් තියෙන්න පුළුවන් |
-| `jobs` (global) | id, source, external_id, title, company, url, description, location_text, tags (json), salary_min, salary_max, salary_currency, posted_at, first_seen_at, content_hash | **unique (source, external_id)**; `content_hash` එකෙන් cross-source dedupe; description වගේ විශාල දේවල් අවශ්‍ය වෙලාවට විතරක් ගන්න |
-| `user_jobs` | user_id, job_id, score, reasons (json), status (`new`/`notified`/`rejected`), location_uncertain (bool), salary_unknown (bool), cover_letter (text), notified_at | **unique (user_id, job_id)** — මෙතනයි එක user කෙනෙක්ගේම ස්ථාවරය තියෙන්නේ |
-| `notifications` | id, user_id, user_job_id, channel, status (`pending`/`sent`/`failed`), attempts, sent_at, error | audit log; retry සහ "මොකද වුණේ?" කියලා බලන්න |
+| `job_postings` (global) | id, source, external_id, title, company, url, description, location_text, tags (json), salary_min, salary_max, salary_currency, posted_at, first_seen_at, content_hash | **unique (source, external_id)**; `content_hash` එකෙන් cross-source dedupe; description වගේ විශාල දේවල් අවශ්‍ය වෙලාවට විතරක් ගන්න |
+| `user_jobs` | user_id, job_posting_id, score, reasons (json), status (`new`/`notified`/`rejected`), location_uncertain (bool), salary_unknown (bool), cover_letter (text), notified_at | **unique (user_id, job_posting_id)** — මෙතනයි එක user කෙනෙක්ගේම ස්ථාවරය තියෙන්නේ |
+| `notification_deliveries` | id, user_id, user_job_id, channel, status (`pending`/`sent`/`failed`), attempts, sent_at, error | audit log; retry සහ "මොකද වුණේ?" කියලා බලන්න |
 | `sessions`, `password_reset_tokens` | Laravel defaults | Breeze එකෙන් එනවා |
+
+> **Milestone 1 දී සිදු කළ නම් කිරීම්:** Laravel එකේ queue සඳහාම `jobs` කියලා table එකක් තියෙන නිසා අපේ ගෝලීය ජොබ් table එක **`job_postings`** ලෙස නම් කළා. Audit log එක **`notification_deliveries`** වුණා — Laravel එකේ standard `notifications` table එක ඉදිරියේදී in-app notifications සඳහා වෙන් කරලා තියෙනවා. මේ වෙනස Project Book එකේත් සටහන් කරලා තියෙනවා.
 
 **Dedupe නීති:**
 1. එකම source එකේ එකම `external_id` → නැවත දාන්නේ නෑ (upsert විතරයි).
