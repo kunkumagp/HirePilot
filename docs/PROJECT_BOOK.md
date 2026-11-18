@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.4 · Last updated: 2026-11-18
+> **Living document** · Version 1.5 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -117,9 +117,10 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 
 1. **`dev` එක පදනමයි.** හැම milestone එකක්ම `dev` එකෙන් අලුත් branch එකක් හදලා ඒකට checkout වෙලා වැඩ කරනවා: `mil-1`, `mil-2`, `mil-3`, `mil-4`, `mil-5`, `mil-6`.
 2. **Merge කරන්න කලින් Project Book එක update කරන්න ඕනේ.** Milestone එකේ වැඩ ඉවර වුණාම, ඒම milestone branch එකේදීම `docs/PROJECT_BOOK.md` එක update කරනවා — status එක `✅ Done — <date>` කරනවා, මොකක්ද හැදුවේ කියලා කෙටි සටහනක් එකතු කරනවා, අලුත් තීරණ තියෙනවා නම් §4 එකත් යාවත්කාලීන කරනවා.
-3. **ඊට පස්සේ merge කරන්න.** Update කරපු Project Book එකත් එක්ක අදාළ branch එක `dev` එකට merge කරනවා. කිසිම milestone වැඩේක් කෙලින්ම `dev` එකේ නොකරන්න.
-4. **`mil-6` merge කරාට පස්සේ `mil-7-auth` හදන්න.** Auth + React UI milestone එක (§11) කරන්නේ `dev` එකෙන් හදපු `mil-7-auth` branch එකේ. ඊටත් පස්සේ SaaS readiness එක සඳහා එහෙමම අලුත් branch එකක් (`mil-8-saas`) හදන්න.
-5. හැම merge එකකින්ම පස්සේ `dev` එකේ tests ආයෙත් ධාවනය කරලා හොඳින් තියෙනවාද බලන්න.
+3. **මුලින්ම milestone branch එක `origin` එකට push කරන්න.** Project Book update එකත් ඇතුළත්ව අදාළ branch එක push කරන්න: `git push origin <mil-N>`.
+4. **ඊට පස්සේ `dev` එකට merge කරන්න.** කිසිම milestone වැඩේක් කෙලින්ම `dev` එකේ නොකරන්න.
+5. **අන්තිමට `dev` එකත් `origin` එකට push කරන්න.** හැම merge එකකින්ම පස්සේ `dev` එකේ tests ආයෙත් ධාවනය කරලා හොඳින් තියෙනවාද බලලා, ඊට පස්සේ `git push origin dev` කරන්න.
+6. **`mil-6` merge කරාට පස්සේ `mil-7-auth` හදන්න.** Auth + React UI milestone එක (§11) කරන්නේ `dev` එකෙන් හදපු `mil-7-auth` branch එකේ. ඊටත් පස්සේ SaaS readiness එක සඳහා එහෙමම අලුත් branch එකක් (`mil-8-saas`) හදන්න.
 
 ### Folder ව්‍යුහය
 
@@ -398,6 +399,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 1.2 | 2026-11-18 | Milestone 1 සම්පූර්ණ වුණා — table නම් දෙකක වෙනස (`job_postings`, `notification_deliveries`) සහ M1 සාරාංශය/status එකතු කළා. |
 | 1.3 | 2026-11-18 | **`backend/` + `frontend/` folder split** සිදු කළා; Inertia වෙනුවට React SPA + Laravel API/Sanctum තීරණය ලේඛනගත කළා. |
 | 1.4 | 2026-11-18 | Milestone 2 සම්පූර්ණ වුණා — RemoteOK adapter, `JobData` DTO, `Source` interface, fixture සහ dry-run output; status සහ සාරාංශය එකතු කළා. |
+| 1.5 | 2026-11-18 | Merge workflow එක ශක්තිමත් කළා: පළමුව milestone branch එක `origin` එකට push, ඊට පස්සේ `dev` එකට merge, අන්තිමට `dev` එකත් push. |
 
 ---
 

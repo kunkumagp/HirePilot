@@ -159,7 +159,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - **ලේඛන සිංහලෙන්** (README, AGENTS, PLAN, PROJECT_BOOK); cover letter සහ Telegram/Email පණිවිඩ ඉංග්‍රීසියෙන්.
 - **Table නම්:** Laravel queue එකේ `jobs` එක්ක පැටලෙන්නේ නැති වෙන්න අපේ ගෝලීය table එක `job_postings`; audit log එක `notification_deliveries`. Standard `notifications` එක in-app සඳහා වෙන් කරන්න.
 - **සියලු tune කිරීම් `config/jobhunter.php` එකේ හෝ per-user DB settings වල** — code එකේ hardcode කරන්න එපා.
-- **Branch workflow:** හැම milestone එකක්ම `dev` එකෙන් අලුත් branch එකකට (`mil-1`, `mil-2`, … `mil-6`). වැඩ ඉවර වුණාම **merge කරන්න කලින්** ඒම branch එකේදීම `docs/PROJECT_BOOK.md` update කරන්න. ඊට පස්සේ `dev` එකට merge කරන්න. `mil-6` ට පස්සේ `dev` එකෙන් `mil-7-auth` හදන්න (ඊට පස්සේ `mil-8-saas`).
+- **Branch workflow:** හැම milestone එකක්ම `dev` එකෙන් අලුත් branch එකකට (`mil-1`, `mil-2`, … `mil-6`). වැඩ ඉවර වුණාම **merge කරන්න කලින්** ඒම branch එකේදීම `docs/PROJECT_BOOK.md` update කරන්න. ඊළඟ පියවර මේ පිළිවෙළටම කරන්න: **(1)** milestone branch එක `origin` එකට push කරන්න (`git push origin <mil-N>`), **(2)** ඊට පස්සේ `dev` එකට merge කරන්න, **(3)** අන්තිමට `dev` එකත් `origin` එකට push කරන්න (`git push origin dev`). `mil-6` ට පස්සේ `dev` එකෙන් `mil-7-auth` හදන්න (ඊට පස්සේ `mil-8-saas`).
 - **හැම milestone එකකින් පස්සේ නවත්වලා** සිංහලෙන් සාරාංශයක් දෙන්න.
 
 ### Commands
