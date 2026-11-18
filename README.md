@@ -135,6 +135,17 @@ Live run එකක් සඳහා `--dry-run` අයින් කරන්න. 
 
 ---
 
+## SaaS deployment සඳහා සූදානම
+
+- **Database:** SQLite වෙනුවට Postgres පාවිච්චි කරන්න පුළුවන් — `.env` එකේ `DB_CONNECTION=pgsql` සහ `DB_HOST/DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD` සකසලා `php artisan migrate --force` ධාවනය කරන්න. Schema එක DB-specific SQL නැතුව ලියලා තියෙනවා.
+- **Queues:** `QUEUE_CONNECTION=database` සහ `config/jobhunter.php` එකේ `notify.use_queue = true` දාලා `php artisan queue:work` ධාවනය කරන්න. එතකොට `DispatchUserNotifications` job එක notification බාර ගන්නවා.
+- **Scheduler:** SaaS host එකක cron එකෙන් හැම මිනිත්තුවකම `php artisan schedule:run` කරන්න — `routes/console.php` එකේ විනාඩි 30ක schedule එක තියෙනවා. **GitHub Actions එකත් එකම database එක ලියනවා නම් එක් ස්ථානයක් පමණක් ධාවනය කරන්න.**
+- **Frontend:** `npm run build` එකෙන් හදපු `frontend/dist` එක static hosting එකක දාන්න. `VITE_API_BASE_URL` එක production API එකට දාලා, backend එකේ `FRONTEND_ORIGINS` එකට ඒ origin එකත් එකතු කරන්න.
+- **APP_KEY:** එකම අගය ස්ථිරව තියන්න — නැත්නම් encrypt කරපු per-user SMTP credentials කියවන්න බැහැ.
+- **Plans (placeholder):** `users.plan` එක `free` හෝ `pro`; සීමා `config/jobhunter.php` එකේ `plans` යටතේ. **Payment/billing integrate කරලා නෑ** — මේක පසුකාලීන වැඩක් සඳහා වූ හිස් හැඩයක් විතරයි.
+
+---
+
 ## සීමා
 
 - AI/LLM/ML නෑ.

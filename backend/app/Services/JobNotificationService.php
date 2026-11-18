@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\DTO\JobData;
 use App\DTO\ScoreResult;
+use App\Jobs\DispatchUserNotifications;
 use App\Models\JobPosting;
 use App\Models\User;
 use App\Models\UserJob;
@@ -66,9 +67,19 @@ final class JobNotificationService
             $eligible->push($userJob);
         }
 
+        if (! $persist || $eligible->isEmpty()) {
+            return ['new' => $new, 'notified' => 0];
+        }
+
+        if ((bool) config('jobhunter.notify.use_queue', false)) {
+            DispatchUserNotifications::dispatch($user->id, $eligible->pluck('id')->all());
+
+            return ['new' => $new, 'notified' => 0];
+        }
+
         return [
             'new' => $new,
-            'notified' => $persist ? $this->dispatcher->dispatch($user, $eligible) : 0,
+            'notified' => $this->dispatcher->dispatch($user, $eligible),
         ];
     }
 }

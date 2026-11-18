@@ -46,8 +46,15 @@ final class NotificationDispatcher
             return 0;
         }
 
-        $maxPerRun = (int) ($user->userSetting?->max_notifications_per_run
-            ?? config('jobhunter.notify.max_notifications_per_run', 10));
+        $plan = (string) ($user->plan ?? 'free');
+        $planLimit = (int) config(
+            "jobhunter.plans.{$plan}.max_notifications_per_run",
+            (int) config('jobhunter.notify.max_notifications_per_run', 10),
+        );
+        $maxPerRun = min(
+            (int) ($user->userSetting?->max_notifications_per_run ?? config('jobhunter.notify.max_notifications_per_run', 10)),
+            $planLimit,
+        );
 
         $selected = $userJobs->sortByDesc('score')->take($maxPerRun)->values();
         $notified = 0;
