@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.8 · Last updated: 2026-11-18
+> **Living document** · Version 1.9 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -300,7 +300,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 3 | Filters + scoring + edge-case tests | `mil-3` | ✅ Done — 2026-11-18 |
 | 4 | Remotive, WWR, Jobicy, Himalayas + cross-source dedupe | `mil-4` | ✅ Done — 2026-11-18 |
 | 5 | Notification channels (Telegram/Email/In-app) + cover letter | `mil-5` | ✅ Done — 2026-11-18 |
-| 6 | GitHub Actions + state branch + සිංහල README/AGENTS | `mil-6` | ⬜ Planned |
+| 6 | GitHub Actions + state branch + සිංහල README/AGENTS | `mil-6` | ✅ Done — 2026-11-18 |
 | 7 | Auth (Sanctum) + React SPA (Dashboard, Jobs, Settings, Notification centre) | `mil-7-auth` | ⬜ Planned |
 | 8 | SaaS readiness (Postgres, queues, per-user SMTP UI, deploy guide) | `mil-8-saas` | ⬜ Planned |
 
@@ -319,6 +319,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 **Milestone 4 සාරාංශය (2026-11-18):** ඉතිරි adapter 4 එකතු වුණා — Remotive (JSON), We Work Remotely (RSS), Jobicy (JSON), Himalayas (JSON). HTTP එක `JsonApiSource` base එකකට ගෙනලා duplication අයින් කළා; HTML → plain text සඳහා `TextNormalizer`, field හැරවීම් සඳහා `SourceValues` කියන පොඩි services එකතු වුණා. WWR RSS එක කියවන්න **PHP එකේම SimpleXML** පාවිච්චි කළා — ඒ නිසා අලුත් Composer dependency එකක් එපා වුණා (මුල් සැලැස්මේ තිබූ SimplePie වෙනුවට). `DedupeService` එකෙන් normalised `(company, title)` hash එකක් හදලා cross-source dedupe කරනවා; `FetchService` එක එයාගේම `(source, external_id)` එකත් එක්ක global `job_postings` table එකට upsert කරනවා — **`--dry-run` එකේදී කිසිම DB write එකක් නෑ**. හැම source එකටම trimmed fixture එකක් තියෙනවා. Live dry-run එකේ දී source 5 එකතුවෙන් **207 unique ජොබ්** ලැබිලා, පෙරහන් පස්සේ **1ක්** score 9ක් එක්ක ඉතුරු වුණා — හැම ජොබ් එකම එක් වරක් විතරක් ගණන් කරලා තියෙනවා කියන එක dedupe එක පෙන්නනවා. **PHPUnit: 46 tests, 139 assertions — සියල්ල pass වුණා.**
 
 **Milestone 5 සාරාංශය (2026-11-18):** දැනුම්දීම් ක්‍රම තුනම එක `Notifier` interface එකක් යටතේ ක්‍රියාත්මක වෙනවා — **Telegram** (Bot API `sendMessage`), **Email** (Laravel Mail; per-user SMTP credentials encrypt කරලා තියෙනවා, නැත්නම් default mailer), සහ **In-app** (Laravel database notifications → වෙබ් එකේ notification center එකට එන data). `NotificationDispatcher` එක එක user කෙනෙක්ගේ enabled channels වලට විතරක් යවනවා, ලකුණු වැඩිම ඒවා මුලින්, එක run එකකට උපරිම `max_notifications_per_run`, retry + backoff එක්ක — එක channel එකක් fail වුණත් අනිත් ඒවාට බාධා වෙන්නේ නෑ. සාර්ථක වුණාට පස්සේ විතරක් `user_jobs.status = notified` වෙනවා; හැම උත්සාහයක්ම `notification_deliveries` audit table එකේ සටහන් වෙනවා. `CoverLetterService` එක `cover_letter.md.tpl` එක pure templating එකෙන් පුරවනවා (AI නෑ) — එක user ගේ skills ජොබ් එකේ තියෙන ඒවා විතරය matched_skills එකට යන්නේ. Laravel database notifications සඳහා `notifications` migration එකත් එකතු වුණා. **`--dry-run` එකේදී කිසිම user_jobs/notification/delivery write එකක් නෑ.** **PHPUnit: 52 tests, 166 assertions — සියල්ල pass වුණා.**
+
+**Milestone 6 සාරාංශය (2026-11-18):** `.github/workflows/run.yml` එකතු වුණා — හැම විනාඩි 30 කට වරක් cron, `workflow_dispatch` අතින් run කිරීමට, සහ `concurrency` group එකකින් එකවර run දෙකක් වළක්වනවා. Workflow එක `dev` එක checkout කරලා, PHP 8.4 + Composer cache එක්ක dependencies ගෙනලා, **`state` branch එකෙන් `database.sqlite` restore කරලා**, migrate + job run කරලා, DB එක ආයෙ `state` branch එකට commit කරනවා. Secrets ඔක්කොම repo secrets වලින් env විදිහට එනවා (කිසිම එකක් repo එකේ නෑ). සිංහල **README.md** එකත් ලියලා ඉවරයි — local setup, dry-run, BotFather එකෙන් bot හදන හැටි, chat id ගන්න හැටි, per-user SMTP, config tune කිරීම, සහ Actions/secrets සැකසුම ඒකේ තියෙනවා. YAML එක Symfony YAML parser එකෙන් වලිදාගත්තා. **මෙතැනදී local/MVP version එක සම්පූර්ණයෙන් වැඩ කරනවා. PHPUnit: 52 tests, 166 assertions — සියල්ල pass වුණා.**
 
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
@@ -410,6 +412,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 1.6 | 2026-11-18 | Milestone 3 සම්පූර්ණ වුණා — FilterPipeline, SalaryNormalizer, ScoringService සහ edge-case tests; status සහ live-run සටහන එකතු කළා. |
 | 1.7 | 2026-11-18 | Milestone 4 සම්පූර්ණ වුණා — ඉතිරි sources 4, fixtures, cross-source dedupe, FetchService; SimpleXML තීරණයත් ලේඛනගත කළා. |
 | 1.8 | 2026-11-18 | Milestone 5 සම්පූර්ණ වුණා — නාලිකා 3, dispatcher, retry/backoff, cover letter, audit log; status සහ සාරාංශය එකතු කළා. |
+| 1.9 | 2026-11-18 | Milestone 6 සම්පූර්ණ වුණා — GitHub Actions workflow, state-branch persistence, සිංහල README; MVP එක සම්පූර්ණයි. |
 
 ---
 
