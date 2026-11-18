@@ -15,6 +15,16 @@ class UserChannel extends Model
     /** @use HasFactory<UserChannelFactory> */
     use HasFactory;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'user_id',
+        'type',
+        'enabled',
+        'target',
+        'credentials',
+        'verified_at',
+    ];
+
     protected function casts(): array
     {
         return [
