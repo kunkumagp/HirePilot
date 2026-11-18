@@ -1,0 +1,104 @@
+name: HirePilot job runner
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hirepilot-run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, simplexml, sqlite3, pdo_sqlite
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ runner.os }}-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare environment
+        working-directory: backend
+        run: |
+          if [ ! -f .env ]; then cp .env.example .env; fi
+
+      - name: Restore database from state branch
+        run: |
+          git fetch origin state || true
+          mkdir -p backend/database
+          if git rev-parse --verify origin/state >/dev/null 2>&1; then
+            git restore --source=origin/state -- backend/database/database.sqlite || true
+          fi
+          touch backend/database/database.sqlite
+
+      - name: Run job hunter
+        working-directory: backend
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+          APP_KEY: ${{ secrets.APP_KEY }}
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/database.sqlite
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MAIL_MAILER: ${{ secrets.MAIL_MAILER }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_FROM_ADDRESS: ${{ secrets.MAIL_FROM_ADDRESS }}
+          MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
+        run: |
+          php artisan migrate --force --no-interaction
+          php artisan jobhunter:run --no-interaction
+
+      - name: Save database to state branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp backend/database/database.sqlite /tmp/hirepilot-db.sqlite
+          git fetch origin state || true
+
+          if git rev-parse --verify origin/state >/dev/null 2>&1; then
+            git checkout -f -B state origin/state
+          else
+            git checkout --orphan state
+            git rm -rf --cached . >/dev/null 2>&1 || true
+          fi
+
+          mkdir -p backend/database
+          cp /tmp/hirepilot-db.sqlite backend/database/database.sqlite
+          git add -f backend/database/database.sqlite
+          if git diff --cached --quiet; then
+            echo "Database unchanged; nothing to commit."
+          else
+            git commit -m "chore: persist jobs database ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
+            git push origin state
+          fi
