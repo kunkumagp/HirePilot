@@ -6,7 +6,9 @@ namespace App\Console\Commands;
 
 use App\DTO\JobData;
 use App\DTO\ScoreResult;
+use App\Models\JobPosting;
 use App\Models\User;
+use App\Services\FetchService;
 use App\Services\FilterPipeline;
 use App\Services\ScoringService;
 use App\Services\Sources\Source;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\Log;
 class JobHunterRunCommand extends Command
 {
     public function __construct(
+        private readonly FetchService $fetchService,
         private readonly FilterPipeline $filterPipeline,
         private readonly ScoringService $scoringService,
     ) {
@@ -44,6 +47,9 @@ class JobHunterRunCommand extends Command
         /** @var list<JobData> $allJobs */
         $allJobs = [];
 
+        /** @var array<string, true> $seenHashes */
+        $seenHashes = array_fill_keys(JobPosting::query()->pluck('content_hash')->all(), true);
+
         foreach ($sources as $key => $settings) {
             if (! ($settings['enabled'] ?? false)) {
                 continue;
@@ -65,9 +71,9 @@ class JobHunterRunCommand extends Command
                 continue;
             }
 
-            $jobs = $source->fetch();
+            $jobs = $this->fetchService->fetchSource($source, ! $isDryRun, $seenHashes);
             $allJobs = array_merge($allJobs, $jobs);
-            $this->line(sprintf('  %-14s fetched %d', $source->name(), count($jobs)));
+            $this->line(sprintf('  %-14s unique %d', $source->name(), count($jobs)));
         }
 
         $user = User::where('email', config('jobhunter.profile.email'))->first();

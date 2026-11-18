@@ -1,0 +1,35 @@
+{
+  "apiVersion": "2.2.19",
+  "jobCount": 2,
+  "jobs": [
+    {
+      "id": 7001,
+      "url": "https://jobicy.com/jobs/7001-sample-react-developer",
+      "jobTitle": "React Developer",
+      "companyName": "Acme Remote",
+      "jobGeo": "Worldwide",
+      "jobIndustry": ["Software Development"],
+      "jobType": ["Full-Time"],
+      "jobDescription": "<p>Build web applications with React.</p>",
+      "jobExcerpt": "Build web applications with React.",
+      "annualSalaryMin": 70000,
+      "annualSalaryMax": 90000,
+      "salaryCurrency": "USD",
+      "pubDate": "2026-11-18T06:00:00+00:00"
+    },
+    {
+      "id": 7002,
+      "url": "https://jobicy.com/jobs/7002-sample-ops",
+      "jobTitle": "Operations Coordinator",
+      "companyName": "Example Ops",
+      "jobGeo": "",
+      "jobIndustry": ["Operations"],
+      "jobType": ["Contract"],
+      "jobDescription": "<p>Coordinate operations.</p>",
+      "jobExcerpt": "Coordinate operations.",
+      "annualSalaryMin": 0,
+      "annualSalaryMax": 0,
+      "pubDate": "2026-11-17T06:00:00+00:00"
+    }
+  ]
+}
