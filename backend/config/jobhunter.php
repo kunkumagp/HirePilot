@@ -31,11 +31,18 @@ return [
     'filters' => [
         'max_age_days' => 14,
         'title_include' => ['web', 'frontend', 'backend', 'full stack', 'fullstack', 'react', 'node', 'laravel'],
-        'exclude_words' => ['intern', 'unpaid', 'principal', 'security clearance'],
+        'exclude_words' => ['intern', 'unpaid', 'principal', 'senior staff', 'security clearance'],
         'location_accept' => ['worldwide', 'anywhere', 'global', 'asia', 'apac', 'sri lanka'],
         'location_reject' => ['us only', 'usa only', 'eu only', 'uk only', 'must reside'],
         'min_salary_usd_yearly' => 24000,
         'allow_unknown_salary' => true,
+        // Sources rarely state the pay period, so infer it from the amount.
+        'salary' => [
+            'hourly_threshold' => 1000,
+            'monthly_threshold' => 12000,
+            'hours_per_year' => 2080,
+            'months_per_year' => 12,
+        ],
     ],
 
     /*

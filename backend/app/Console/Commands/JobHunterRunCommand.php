@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\DTO\JobData;
+use App\DTO\ScoreResult;
+use App\Models\User;
+use App\Services\FilterPipeline;
+use App\Services\ScoringService;
 use App\Services\Sources\Source;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -15,6 +19,13 @@ use Illuminate\Support\Facades\Log;
 #[Description('Fetch, filter, score, store and notify about matching remote jobs.')]
 class JobHunterRunCommand extends Command
 {
+    public function __construct(
+        private readonly FilterPipeline $filterPipeline,
+        private readonly ScoringService $scoringService,
+    ) {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
         $isDryRun = (bool) $this->option('dry-run');
@@ -59,33 +70,64 @@ class JobHunterRunCommand extends Command
             $this->line(sprintf('  %-14s fetched %d', $source->name(), count($jobs)));
         }
 
+        $user = User::where('email', config('jobhunter.profile.email'))->first();
+        $settings = $user?->userSetting;
+        $minScore = (int) ($settings?->min_score ?? config('jobhunter.scoring.min_score', 5));
+
+        /** @var list<array{job: JobData, score: ScoreResult, salaryUnknown: bool}> $matches */
+        $matches = [];
+
+        foreach ($allJobs as $job) {
+            $filterResult = $this->filterPipeline->apply($job, $settings);
+
+            if (! $filterResult->passed) {
+                continue;
+            }
+
+            $matches[] = [
+                'job' => $job,
+                'score' => $this->scoringService->score($job, $settings, $filterResult->locationUncertain),
+                'salaryUnknown' => $filterResult->salaryUnknown,
+            ];
+        }
+
         $this->line('Fetched: '.count($allJobs));
-        $this->line('After filters: '.count($allJobs));
+        $this->line('After filters: '.count($matches));
         $this->line('New: 0');
         $this->line('Notified: 0');
 
-        foreach (collect($allJobs)->groupBy(fn (JobData $job): string => $job->source) as $sourceName => $jobs) {
+        foreach (collect($matches)->groupBy(fn (array $match): string => $match['job']->source) as $sourceName => $items) {
             $this->newLine();
-            $this->line($sourceName.' ('.$jobs->count().'):');
+            $this->line($sourceName.' ('.$items->count().'):');
 
-            foreach ($jobs as $job) {
-                $salary = $job->salaryCurrency !== null
-                    ? sprintf('%s %s-%s', $job->salaryCurrency, $job->salaryMin ?? '?', $job->salaryMax ?? '?')
-                    : 'salary not listed';
+            foreach ($items as $item) {
+                $job = $item['job'];
+                $score = $item['score'];
+                $belowThreshold = $score->score < $minScore ? ' (below min_score)' : '';
+
+                $salary = $item['salaryUnknown']
+                    ? 'salary not listed'
+                    : sprintf('%s %s-%s', $job->salaryCurrency ?? '?', $job->salaryMin ?? '?', $job->salaryMax ?? '?');
 
                 $this->line(sprintf(
-                    '  - %s @ %s | %s | %s | %s',
+                    '  - [%d%s] %s @ %s | %s | %s | %s',
+                    $score->score,
+                    $belowThreshold,
                     $job->title,
                     $job->company,
                     $job->locationText !== '' ? $job->locationText : '(location unclear)',
                     $salary,
                     $job->url,
                 ));
+
+                if ($score->reasons !== []) {
+                    $this->line('      '.implode('; ', $score->reasons));
+                }
             }
         }
 
-        if ($allJobs === []) {
-            $this->comment('No jobs fetched. Source adapters for the remaining sources arrive in Milestone 4.');
+        if ($matches === []) {
+            $this->comment('No jobs matched the filters. Tune config/jobhunter.php if this is unexpected.');
         }
 
         return self::SUCCESS;
