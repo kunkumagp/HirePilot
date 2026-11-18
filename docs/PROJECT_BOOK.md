@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.1 · Last updated: 2026-11-18
+> **Living document** · Version 1.2 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -92,7 +92,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 
 1. **අරමුණ සහ සීමා නිර්වචනය** — $0 වියදම, AI නෑ, official API/RSS විතරයි, secrets env වල විතරයි.
 2. **තීරණ එකින් එක තහවුරු කිරීම** — ප්‍රශ්න අහලා පැහැදිලි කරගත්තා (පහළ table එක බලන්න).
-3. **ගෘහ නිර්මාණය සහ data model එක සැලසුම් කිරීම** — පොදු `jobs` pool + පුද්ගලික `user_jobs` අදහස මෙතැනදී තීරණය වුණා.
+3. **ගෘහ නිර්මාණය සහ data model එක සැලසුම් කිරීම** — පොදු `job_postings` pool + පුද්ගලික `user_jobs` අදහස මෙතැනදී තීරණය වුණා. (Laravel එකේ queue සඳහාම `jobs` කියලා table එකක් තියෙන නිසා අපේ table එක `job_postings` ලෙස නම් කළා.)
 4. **Milestones 8කට කඩාගැනීම** — හැම එකටම "ඉවර වුණා කියන්නේ මොකක්ද" කියලා නිර්ණායකයක් දැම්මා.
 5. **ලේඛනගත කිරීම** — `PLAN.md` (තාක්ෂණික සැලැස්ම), `AGENTS.md` (coding agent නීති), සහ මේ `PROJECT_BOOK.md` (පැහැදිලි කිරීමේ ලේඛනය).
 
@@ -108,6 +108,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | **එකම fetch, බොහෝ user** | API rate limits රකින්න සහ වියදම අඩුවෙන් තියන්න. |
 | **`state` branch** (Actions cache නෙවෙයි) | Cache එක මැකී යන්න පුළුවන්; branch එක වඩා විශ්වාසනීයයි. |
 | **AI නෑ, auto-submit නෑ** | පිරිවැය අඩුවෙන් තියන්න, ප්‍රතිඵල පැහැදිලි කරන්න පුළුවන් වෙන්න, සහ job sites වල නීති කඩන්නේ නැති වෙන්න. |
+| **`job_postings` සහ `notification_deliveries` යන නම්** (මුල් සැලැස්මේ `jobs` / `notifications` වෙනුවට) | Laravel එකේම queue සඳහා `jobs` table එකක් තියෙනවා. ඒ නිසා අපේ දත්ත වෙන් කරන්න ඕනේ වුණා. `notifications` කියන නම Laravel එකේ in-app notification එකට වෙන් කළා; අපේ audit log එක `notification_deliveries` වුණා. (Milestone 1 දී සොයාගත්තා.) |
 
 ### Git ශාඛා ප්‍රතිපත්තිය (Branching workflow)
 
@@ -155,7 +156,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
                               │  (එක් run එකකදී එක් වරක් බැගින්)
                               ▼
                      ┌─────────────────┐
-                     │  FetchService   │  →  global `jobs` table
+                     │  FetchService   │  →  global `job_postings` table
                      │  + dedupe       │     (පොදු ජොබ් ගොනුව)
                      └────────┬────────┘
                               │
@@ -201,9 +202,9 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | `users` | Account එක — නම, ඊමේල්, password hash, portfolio URL, active තත්ත්වය. |
 | `user_settings` | එක user කෙනෙක්ගේ නීති — skills, title keywords, blacklist, location ලැයිස්තු, අවම USD වැටුප, ලකුණු weights, එක run එකක උපරිම දැනුම්දීම් ගාණ. |
 | `user_channels` | කුමන ක්‍රමයෙන් දැනුම් දෙන්නද කියන එක — වර්ගය, target, encrypt කරපු credentials. |
-| `jobs` *(පොදු)* | මූලාශ්‍රය, external id, title, company, URL, description, location, tags, වැටුප, post වුණු දිනය, hash. |
-| `user_jobs` *(පුද්ගලික)* | Score, හේතු, cover letter, status (`new` / `notified` / `rejected`), location අපැහැදිලිද?, වැටුප නැතිද? |
-| `notifications` | Audit log — කුමන channel එකට යැව්වාද, සාර්ථකද, කී පාරක් retry කළාද, වැරැද්ද මොකක්ද. |
+| `job_postings` *(පොදු)* | මූලාශ්‍රය, external id, title, company, URL, description, location, tags, වැටුප, post වුණු දිනය, hash. **unique `(source, external_id)`** සහ `content_hash` index. |
+| `user_jobs` *(පුද්ගලික)* | Score, හේතු, cover letter, status (`new` / `notified` / `rejected`), location අපැහැදිලිද?, වැටුප නැතිද? **unique `(user_id, job_posting_id)`**. |
+| `notification_deliveries` | Audit log — කුමන channel එකට යැව්වාද, සාර්ථකද, කී පාරක් retry කළාද, වැරැද්ද මොකක්ද. Laravel එකේ standard `notifications` table එක ඉදිරියේදී in-app notifications සඳහා වෙන් කරලා තියෙනවා. |
 
 **Dedupe නීති:**
 
@@ -278,7 +279,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 
 | # | Milestone | Branch | තත්ත්වය |
 |---|---|---|---|
-| 1 | Skeleton + migrations + models + config + dry-run command | `mil-1` | ⬜ Planned |
+| 1 | Skeleton + migrations + models + config + dry-run command | `mil-1` | ✅ Done — 2026-11-18 |
 | 2 | RemoteOK adapter + fixture + dry-run output | `mil-2` | ⬜ Planned |
 | 3 | Filters + scoring + edge-case tests | `mil-3` | ⬜ Planned |
 | 4 | Remotive, WWR, Jobicy, Himalayas + cross-source dedupe | `mil-4` | ⬜ Planned |
@@ -292,6 +293,8 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 - **Phase A — Local MVP (Milestones 1–6):** එක default user කෙනෙක්, නොමිලේ, GitHub Actions එකෙන් ස්වයංක්‍රීයව ධාවනය වෙනවා.
 - **Phase B — Multi-user app (Milestone 7):** Login/register, පෞද්ගලික settings, වෙබ් එකේ notification centre.
 - **Phase C — SaaS (Milestone 8):** Postgres, queues, ඕනෑම කෙනෙකුට account එකකින් පාවිච්චි කරන්න පුළුවන් තත්ත්වය; අවශ්‍ය පරිදි අඩු වියදමක් සහිත hosting.
+
+**Milestone 1 සාරාංශය (2026-11-18):** Laravel 13.43 skeleton එක ස්ථාපනය කළා; Boost dev tool එකත් එකතු වුණා. `users` table එකට profile fields එකතු කරලා, `user_settings`, `user_channels`, `job_postings`, `user_jobs`, `notification_deliveries` කියන tables හැදුවා. ඊට අදාළ Eloquent models, factories සහ `DefaultUserSeeder` එකත් හැදුවා. සියලු tune කිරීම් `config/jobhunter.php` එකේ තියෙනවා. `php artisan jobhunter:run --dry-run` කියන skeleton command එක වැඩ කරනවා. **PHPUnit: 8 tests, 18 assertions — සියල්ල pass වුණා.**
 
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
@@ -376,6 +379,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 |---|---|---|
 | 1.0 | 2026-11-18 | පළමු සංස්කරණය — සැලැස්ම සම්පූර්ණ වූ පසු ලියන ලදී. Implementation තවම ආරම්භ වී නෑ. |
 | 1.1 | 2026-11-18 | Git ශාඛා ප්‍රතිපත්තිය එකතු කළා (mil-1…mil-6 → dev, ඊට පස්සේ mil-7-auth) සහ milestones table එකට Branch තීරුව එකතු කළා. |
+| 1.2 | 2026-11-18 | Milestone 1 සම්පූර්ණ වුණා — table නම් දෙකක වෙනස (`job_postings`, `notification_deliveries`) සහ M1 සාරාංශය/status එකතු කළා. |
 
 ---
 
