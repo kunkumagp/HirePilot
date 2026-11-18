@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.5 · Last updated: 2026-11-18
+> **Living document** · Version 1.6 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -296,7 +296,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 |---|---|---|---|
 | 1 | Skeleton + migrations + models + config + dry-run command | `mil-1` | ✅ Done — 2026-11-18 |
 | 2 | RemoteOK adapter + fixture + dry-run output | `mil-2` | ✅ Done — 2026-11-18 |
-| 3 | Filters + scoring + edge-case tests | `mil-3` | ⬜ Planned |
+| 3 | Filters + scoring + edge-case tests | `mil-3` | ✅ Done — 2026-11-18 |
 | 4 | Remotive, WWR, Jobicy, Himalayas + cross-source dedupe | `mil-4` | ⬜ Planned |
 | 5 | Notification channels (Telegram/Email/In-app) + cover letter | `mil-5` | ⬜ Planned |
 | 6 | GitHub Actions + state branch + සිංහල README/AGENTS | `mil-6` | ⬜ Planned |
@@ -312,6 +312,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 **Milestone 1 සාරාංශය (2026-11-18):** Laravel 13.43 skeleton එක ස්ථාපනය කළා; Boost dev tool එකත් එකතු වුණා. `users` table එකට profile fields එකතු කරලා, `user_settings`, `user_channels`, `job_postings`, `user_jobs`, `notification_deliveries` කියන tables හැදුවා. ඊට අදාළ Eloquent models, factories සහ `DefaultUserSeeder` එකත් හැදුවා. සියලු tune කිරීම් `config/jobhunter.php` එකේ තියෙනවා. `php artisan jobhunter:run --dry-run` කියන skeleton command එක වැඩ කරනවා. **PHPUnit: 8 tests, 18 assertions — සියල්ල pass වුණා.**
 
 **Milestone 2 සාරාංශය (2026-11-18):** RemoteOK එකේ නිල JSON API එක live sample එකකින් තහවුරු කළා (පළමු item එක legal/metadata බව ඇතුළුව). `JobData` readonly DTO එකක් සහ `Source` interface එකක් හදලා, `RemoteOkSource` adapter එක ඒවා ක්‍රියාත්මක කරනවා. API call එකේ config එකෙන් එන timeout/retries/User-Agent තියෙනවා; එක source එකක් fail වුණත් `[]` ආපහු එනවා. Trimmed sample එක `backend/storage/app/fixtures/remoteok.json` එකේ save කළා. `jobhunter:run --dry-run` එක දැන් එක් එක් source එකෙන් ගත්තු normalise කළ ජොබ් පෙන්නනවා (live ධාවනයේ දී RemoteOK එකෙන් **97** ජොබ් ලැබුණා). RemoteOK එකේ attribution/link-back නීතිය රකින්න මුල් job URL එකම තියාගන්නවා. සටහනක් ලෙස: සමහර RemoteOK salary අගයන් අසාමාන්‍ය ලෙස විශාලව (උදා. `114000000`) එනවා — ඒවා Milestone 3 හි salary normalisation එකේදී විමසා බලන්න. **PHPUnit: 13 tests, 45 assertions — සියල්ල pass වුණා.**
+
+**Milestone 3 සාරාංශය (2026-11-18):** `FilterPipeline` එක පිළිවෙළටම පෙරහන් 5 යොදනවා — freshness, title include, blacklist, location (accept/reject/uncertain flag), සහ USD වැටුප. `SalaryNormalizer` එක config එකේ තියෙන සීමා අනුව hourly/monthly අගයන් yearly එකට හරවනවා. `ScoringService` එක weights අනුව ලකුණු + හේතු ලැයිස්තුව දෙනවා; per-user settings නැති වෙලාවේ `config/jobhunter.php` defaults පාවිච්චි වෙනවා. `jobhunter:run --dry-run` එක දැන් fetch → filter → score පෙන්නනවා. Live ධාවනයේ දී 97 ජොබ් ගත්තත් **0ක්** පෙරහන් පසු ඉතුරු වුණේ නෑ — 66ක් දින 14ට වඩා පරණයි, 30කගේ title එකේ include keyword නෑ, 1ක් blacklist වුණා. මේක filter එක වැඩ කරන බව පෙන්නනවා; ඕනේ නම් `max_age_days` හෝ `title_include` config එකෙන් ලිහිල් කරන්න පුළුවන්. **PHPUnit: 32 tests, 81 assertions — සියල්ල pass වුණා.**
 
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
@@ -400,6 +402,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 1.3 | 2026-11-18 | **`backend/` + `frontend/` folder split** සිදු කළා; Inertia වෙනුවට React SPA + Laravel API/Sanctum තීරණය ලේඛනගත කළා. |
 | 1.4 | 2026-11-18 | Milestone 2 සම්පූර්ණ වුණා — RemoteOK adapter, `JobData` DTO, `Source` interface, fixture සහ dry-run output; status සහ සාරාංශය එකතු කළා. |
 | 1.5 | 2026-11-18 | Merge workflow එක ශක්තිමත් කළා: පළමුව milestone branch එක `origin` එකට push, ඊට පස්සේ `dev` එකට merge, අන්තිමට `dev` එකත් push. |
+| 1.6 | 2026-11-18 | Milestone 3 සම්පූර්ණ වුණා — FilterPipeline, SalaryNormalizer, ScoringService සහ edge-case tests; status සහ live-run සටහන එකතු කළා. |
 
 ---
 
