@@ -87,6 +87,27 @@ class NotificationDispatcherTest extends TestCase
         Mail::assertSent(JobMatchMail::class, fn (JobMatchMail $mail): bool => $mail->hasTo('candidate@example.test'));
     }
 
+    public function test_plan_limit_caps_notifications_per_run(): void
+    {
+        Notification::fake();
+        config(['jobhunter.plans.free.max_notifications_per_run' => 2]);
+
+        $user = $this->userWithChannel(ChannelType::InApp);
+        $user->update(['plan' => 'free']);
+
+        $jobs = collect([
+            $this->userJobFor($user),
+            $this->userJobFor($user),
+            $this->userJobFor($user),
+            $this->userJobFor($user),
+        ]);
+
+        $notified = app(NotificationDispatcher::class)->dispatch($user, $jobs);
+
+        $this->assertSame(2, $notified);
+        $this->assertSame(2, NotificationDelivery::where('status', 'sent')->count());
+    }
+
     public function test_marks_job_notified_when_one_channel_succeeds(): void
     {
         Notification::fake();

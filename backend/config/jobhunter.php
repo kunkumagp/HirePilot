@@ -93,6 +93,19 @@ return [
         'default_channels' => ['telegram'],
         'retry_attempts' => 3,
         'retry_backoff_ms' => 200,
+        // Local/Actions run synchronously; SaaS workers set this to true.
+        'use_queue' => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Plan limits (placeholder — no payment integration yet)
+    |--------------------------------------------------------------------------
+    */
+
+    'plans' => [
+        'free' => ['max_notifications_per_run' => 10],
+        'pro' => ['max_notifications_per_run' => 100],
     ],
 
     /*
