@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Services\Sources\RemoteOkSource;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -61,7 +63,8 @@ return [
     */
 
     'sources' => [
-        'remoteok' => ['enabled' => true],
+        // Adding a source needs one adapter file plus one line here.
+        'remoteok' => ['enabled' => true, 'adapter' => RemoteOkSource::class],
         'remotive' => ['enabled' => true],
         'weworkremotely' => ['enabled' => true],
         'jobicy' => ['enabled' => true],

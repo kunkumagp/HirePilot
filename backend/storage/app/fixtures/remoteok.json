@@ -1,0 +1,40 @@
+[
+  {
+    "last_updated": 1794873600,
+    "legal": "API Terms of Service: Please link back (with follow, and without nofollow!) to the URL on Remote OK and mention Remote OK as a source."
+  },
+  {
+    "slug": "sample-react-developer-1001",
+    "id": "1001",
+    "epoch": 1794873600,
+    "date": "2026-11-18T06:00:00+00:00",
+    "company": "Acme Remote",
+    "company_logo": "",
+    "position": "React Developer",
+    "tags": ["react", "javascript", "typescript", "remote"],
+    "description": "<h3>About the Role</h3><p>Build web interfaces with React and TypeScript.</p>",
+    "location": "Worldwide",
+    "apply_url": "https://remoteok.com/remote-jobs/sample-react-developer-1001",
+    "salary_min": 60000,
+    "salary_max": 90000,
+    "logo": "",
+    "url": "https://remoteok.com/remote-jobs/sample-react-developer-1001"
+  },
+  {
+    "slug": "sample-operations-role-1002",
+    "id": "1002",
+    "epoch": 1794787200,
+    "date": "2026-11-17T06:00:00+00:00",
+    "company": "Example Ops",
+    "company_logo": "",
+    "position": "Operations Coordinator",
+    "tags": ["ops"],
+    "description": "<p>Coordinate remote operations.</p>",
+    "location": "",
+    "apply_url": "https://remoteok.com/remote-jobs/sample-operations-role-1002",
+    "salary_min": 0,
+    "salary_max": 0,
+    "logo": "",
+    "url": "https://remoteok.com/remote-jobs/sample-operations-role-1002"
+  }
+]
