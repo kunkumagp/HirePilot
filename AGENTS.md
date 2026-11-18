@@ -151,6 +151,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## HirePilot project rules (Boost මාර්ගෝපදේශ වලට අමතරව)
 
+- **ව්‍යුහය:** Laravel backend එක `backend/` එකේත්, React + Vite + TypeScript frontend එක `frontend/` එකේත් තියෙනවා. Frontend එක Laravel **API (Sanctum)** හරහා backend එක්ක කතා කරනවා — **Inertia නෑ**. මේ නිසා පහළ commands ටික `backend/` එකෙන් ධාවනය කරන්න ඕනේ.
 - **කිසිම AI/LLM/ML** භාවිතයක් නෑ. සියලු තීරණ keyword/rule මත පදනම් විය යුතුයි.
 - **නිල API/RSS විතරයි.** හැම request එකකම descriptive `User-Agent`, timeout, retry/backoff. RemoteOK එකට link-back කරන්න ඕනේ.
 - **Auto-submission නෑ** — අයදුම් කරන්නේ පාවිච්චි කරන කෙනාමයි.
@@ -164,12 +165,18 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 ### Commands
 
 ```sh
+# Laravel backend
+cd backend
 composer install
-npm install
 php artisan migrate
 php artisan db:seed --class=DefaultUserSeeder
 php artisan test --compact
 php artisan jobhunter:run --dry-run
 vendor/bin/pint --dirty --format agent
+
+# React frontend (Windows වල npm.cmd, macOS/Linux වල npm)
+cd ../frontend
+npm install
+npm run build
 ```
 
