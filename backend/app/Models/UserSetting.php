@@ -14,6 +14,22 @@ class UserSetting extends Model
     /** @use HasFactory<UserSettingFactory> */
     use HasFactory;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'user_id',
+        'skills',
+        'title_include',
+        'exclude_words',
+        'location_accept',
+        'location_reject',
+        'max_age_days',
+        'min_salary_usd_yearly',
+        'allow_unknown_salary',
+        'min_score',
+        'weights',
+        'max_notifications_per_run',
+    ];
+
     protected function casts(): array
     {
         return [

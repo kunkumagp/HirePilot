@@ -1,8 +1,29 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { Layout } from './components/Layout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Dashboard } from './pages/Dashboard';
+import { Jobs } from './pages/Jobs';
+import { Login } from './pages/Login';
+import { Notifications } from './pages/Notifications';
+import { Register } from './pages/Register';
+import { Settings } from './pages/Settings';
+
 export default function App() {
   return (
-    <main>
-      <h1>HirePilot</h1>
-      <p>React + Vite + TypeScript frontend scaffold. The UI arrives in Milestone 7.</p>
-    </main>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

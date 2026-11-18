@@ -369,5 +369,5 @@ return [
 
 - එක් එක් source එකේ නිල docs / live sample එක පරීක්ෂා කරලා fixtures save කරන්න (Milestone 2 දී).
 - Laravel version එක install වෙලාවේ තහවුරු කරන්න (latest stable/LTS).
-- ~~Inertia + React~~ වෙනුවට **වෙනම React SPA + Laravel API/Sanctum** තෝරගත්තා (2026-11-18, folder structure තීරණය අනුව). Milestone 7 දී `laravel/sanctum` dependency එක එකතු කරන්න ඕනේ — ඒ වෙලාවේ අනිවාර්යයෙන් අහන්න.
+- ~~Inertia + React~~ වෙනුවට **වෙනම React SPA + Laravel API/Sanctum** තෝරගත්තා (2026-11-18, folder structure තීරණය අනුව). `laravel/sanctum` සහ `react-router-dom` dependencies දෙක **Milestone 7 දී පරිශීලක අනුමැතියෙන් එකතු කළා**.
 - **දැනටමත් එකඟ වුණු config placeholders (`My Name`, `https://...`) පස්සේ ඔබම වෙනස් කරගන්නවා.**
