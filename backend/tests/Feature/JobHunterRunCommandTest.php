@@ -6,8 +6,15 @@ namespace Tests\Feature;
 
 use App\Models\JobPosting;
 use App\Models\NotificationDelivery;
+use App\Models\User;
+use App\Models\UserChannel;
+use App\Models\UserJob;
+use App\NotificationChannel;
+use App\Notifications\JobMatchNotification;
 use App\Services\Sources\RemoteOkSource;
+use Database\Seeders\DefaultUserSeeder;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class JobHunterRunCommandTest extends TestCase
@@ -73,5 +80,27 @@ class JobHunterRunCommandTest extends TestCase
         $this->artisan('jobhunter:run')->assertSuccessful();
 
         $this->assertSame(2, JobPosting::count());
+    }
+
+    public function test_live_run_notifies_default_user(): void
+    {
+        config([
+            'jobhunter.sources' => [
+                'remoteok' => ['enabled' => true, 'adapter' => RemoteOkSource::class],
+            ],
+        ]);
+        $this->seed(DefaultUserSeeder::class);
+        $user = User::where('email', config('jobhunter.profile.email'))->firstOrFail();
+        UserChannel::factory()->for($user)->create(['type' => NotificationChannel::InApp]);
+        Http::preventStrayRequests();
+        Http::fake(['remoteok.com/api' => Http::response($this->fixturePayload())]);
+        Notification::fake();
+
+        $this->artisan('jobhunter:run')
+            ->expectsOutputToContain('Notified: 1')
+            ->assertSuccessful();
+
+        $this->assertSame(1, UserJob::count());
+        Notification::assertSentTo($user, JobMatchNotification::class);
     }
 }

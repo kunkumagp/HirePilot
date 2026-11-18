@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.7 · Last updated: 2026-11-18
+> **Living document** · Version 1.8 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -299,7 +299,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2 | RemoteOK adapter + fixture + dry-run output | `mil-2` | ✅ Done — 2026-11-18 |
 | 3 | Filters + scoring + edge-case tests | `mil-3` | ✅ Done — 2026-11-18 |
 | 4 | Remotive, WWR, Jobicy, Himalayas + cross-source dedupe | `mil-4` | ✅ Done — 2026-11-18 |
-| 5 | Notification channels (Telegram/Email/In-app) + cover letter | `mil-5` | ⬜ Planned |
+| 5 | Notification channels (Telegram/Email/In-app) + cover letter | `mil-5` | ✅ Done — 2026-11-18 |
 | 6 | GitHub Actions + state branch + සිංහල README/AGENTS | `mil-6` | ⬜ Planned |
 | 7 | Auth (Sanctum) + React SPA (Dashboard, Jobs, Settings, Notification centre) | `mil-7-auth` | ⬜ Planned |
 | 8 | SaaS readiness (Postgres, queues, per-user SMTP UI, deploy guide) | `mil-8-saas` | ⬜ Planned |
@@ -317,6 +317,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 **Milestone 3 සාරාංශය (2026-11-18):** `FilterPipeline` එක පිළිවෙළටම පෙරහන් 5 යොදනවා — freshness, title include, blacklist, location (accept/reject/uncertain flag), සහ USD වැටුප. `SalaryNormalizer` එක config එකේ තියෙන සීමා අනුව hourly/monthly අගයන් yearly එකට හරවනවා. `ScoringService` එක weights අනුව ලකුණු + හේතු ලැයිස්තුව දෙනවා; per-user settings නැති වෙලාවේ `config/jobhunter.php` defaults පාවිච්චි වෙනවා. `jobhunter:run --dry-run` එක දැන් fetch → filter → score පෙන්නනවා. Live ධාවනයේ දී 97 ජොබ් ගත්තත් **0ක්** පෙරහන් පසු ඉතුරු වුණේ නෑ — 66ක් දින 14ට වඩා පරණයි, 30කගේ title එකේ include keyword නෑ, 1ක් blacklist වුණා. මේක filter එක වැඩ කරන බව පෙන්නනවා; ඕනේ නම් `max_age_days` හෝ `title_include` config එකෙන් ලිහිල් කරන්න පුළුවන්. **PHPUnit: 32 tests, 81 assertions — සියල්ල pass වුණා.**
 
 **Milestone 4 සාරාංශය (2026-11-18):** ඉතිරි adapter 4 එකතු වුණා — Remotive (JSON), We Work Remotely (RSS), Jobicy (JSON), Himalayas (JSON). HTTP එක `JsonApiSource` base එකකට ගෙනලා duplication අයින් කළා; HTML → plain text සඳහා `TextNormalizer`, field හැරවීම් සඳහා `SourceValues` කියන පොඩි services එකතු වුණා. WWR RSS එක කියවන්න **PHP එකේම SimpleXML** පාවිච්චි කළා — ඒ නිසා අලුත් Composer dependency එකක් එපා වුණා (මුල් සැලැස්මේ තිබූ SimplePie වෙනුවට). `DedupeService` එකෙන් normalised `(company, title)` hash එකක් හදලා cross-source dedupe කරනවා; `FetchService` එක එයාගේම `(source, external_id)` එකත් එක්ක global `job_postings` table එකට upsert කරනවා — **`--dry-run` එකේදී කිසිම DB write එකක් නෑ**. හැම source එකටම trimmed fixture එකක් තියෙනවා. Live dry-run එකේ දී source 5 එකතුවෙන් **207 unique ජොබ්** ලැබිලා, පෙරහන් පස්සේ **1ක්** score 9ක් එක්ක ඉතුරු වුණා — හැම ජොබ් එකම එක් වරක් විතරක් ගණන් කරලා තියෙනවා කියන එක dedupe එක පෙන්නනවා. **PHPUnit: 46 tests, 139 assertions — සියල්ල pass වුණා.**
+
+**Milestone 5 සාරාංශය (2026-11-18):** දැනුම්දීම් ක්‍රම තුනම එක `Notifier` interface එකක් යටතේ ක්‍රියාත්මක වෙනවා — **Telegram** (Bot API `sendMessage`), **Email** (Laravel Mail; per-user SMTP credentials encrypt කරලා තියෙනවා, නැත්නම් default mailer), සහ **In-app** (Laravel database notifications → වෙබ් එකේ notification center එකට එන data). `NotificationDispatcher` එක එක user කෙනෙක්ගේ enabled channels වලට විතරක් යවනවා, ලකුණු වැඩිම ඒවා මුලින්, එක run එකකට උපරිම `max_notifications_per_run`, retry + backoff එක්ක — එක channel එකක් fail වුණත් අනිත් ඒවාට බාධා වෙන්නේ නෑ. සාර්ථක වුණාට පස්සේ විතරක් `user_jobs.status = notified` වෙනවා; හැම උත්සාහයක්ම `notification_deliveries` audit table එකේ සටහන් වෙනවා. `CoverLetterService` එක `cover_letter.md.tpl` එක pure templating එකෙන් පුරවනවා (AI නෑ) — එක user ගේ skills ජොබ් එකේ තියෙන ඒවා විතරය matched_skills එකට යන්නේ. Laravel database notifications සඳහා `notifications` migration එකත් එකතු වුණා. **`--dry-run` එකේදී කිසිම user_jobs/notification/delivery write එකක් නෑ.** **PHPUnit: 52 tests, 166 assertions — සියල්ල pass වුණා.**
 
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
@@ -407,6 +409,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 1.5 | 2026-11-18 | Merge workflow එක ශක්තිමත් කළා: පළමුව milestone branch එක `origin` එකට push, ඊට පස්සේ `dev` එකට merge, අන්තිමට `dev` එකත් push. |
 | 1.6 | 2026-11-18 | Milestone 3 සම්පූර්ණ වුණා — FilterPipeline, SalaryNormalizer, ScoringService සහ edge-case tests; status සහ live-run සටහන එකතු කළා. |
 | 1.7 | 2026-11-18 | Milestone 4 සම්පූර්ණ වුණා — ඉතිරි sources 4, fixtures, cross-source dedupe, FetchService; SimpleXML තීරණයත් ලේඛනගත කළා. |
+| 1.8 | 2026-11-18 | Milestone 5 සම්පූර්ණ වුණා — නාලිකා 3, dispatcher, retry/backoff, cover letter, audit log; status සහ සාරාංශය එකතු කළා. |
 
 ---
 

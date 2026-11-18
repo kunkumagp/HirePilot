@@ -15,6 +15,17 @@ class NotificationDelivery extends Model
     /** @use HasFactory<NotificationDeliveryFactory> */
     use HasFactory;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'user_id',
+        'user_job_id',
+        'channel',
+        'status',
+        'attempts',
+        'sent_at',
+        'error',
+    ];
+
     protected function casts(): array
     {
         return [
