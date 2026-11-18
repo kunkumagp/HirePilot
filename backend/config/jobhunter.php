@@ -91,6 +91,8 @@ return [
     'notify' => [
         'max_notifications_per_run' => 10,
         'default_channels' => ['telegram'],
+        'retry_attempts' => 3,
+        'retry_backoff_ms' => 200,
     ],
 
     /*

@@ -10,6 +10,7 @@ use App\Models\JobPosting;
 use App\Models\User;
 use App\Services\FetchService;
 use App\Services\FilterPipeline;
+use App\Services\JobNotificationService;
 use App\Services\ScoringService;
 use App\Services\Sources\Source;
 use Illuminate\Console\Attributes\Description;
@@ -25,6 +26,7 @@ class JobHunterRunCommand extends Command
         private readonly FetchService $fetchService,
         private readonly FilterPipeline $filterPipeline,
         private readonly ScoringService $scoringService,
+        private readonly JobNotificationService $jobNotifications,
     ) {
         parent::__construct();
     }
@@ -94,13 +96,20 @@ class JobHunterRunCommand extends Command
                 'job' => $job,
                 'score' => $this->scoringService->score($job, $settings, $filterResult->locationUncertain),
                 'salaryUnknown' => $filterResult->salaryUnknown,
+                'locationUncertain' => $filterResult->locationUncertain,
             ];
+        }
+
+        $counts = ['new' => 0, 'notified' => 0];
+
+        if ($user !== null) {
+            $counts = $this->jobNotifications->process($user, $matches, ! $isDryRun);
         }
 
         $this->line('Fetched: '.count($allJobs));
         $this->line('After filters: '.count($matches));
-        $this->line('New: 0');
-        $this->line('Notified: 0');
+        $this->line('New: '.$counts['new']);
+        $this->line('Notified: '.$counts['notified']);
 
         foreach (collect($matches)->groupBy(fn (array $match): string => $match['job']->source) as $sourceName => $items) {
             $this->newLine();

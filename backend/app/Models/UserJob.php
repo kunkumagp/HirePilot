@@ -15,6 +15,19 @@ class UserJob extends Model
     /** @use HasFactory<UserJobFactory> */
     use HasFactory;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'user_id',
+        'job_posting_id',
+        'score',
+        'reasons',
+        'status',
+        'location_uncertain',
+        'salary_unknown',
+        'cover_letter',
+        'notified_at',
+    ];
+
     protected function casts(): array
     {
         return [
