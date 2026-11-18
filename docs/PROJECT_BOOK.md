@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 1.2 · Last updated: 2026-11-18
+> **Living document** · Version 1.3 · Last updated: 2026-11-18
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -23,7 +23,7 @@
 
 **HirePilot** is a zero-cost, rule-based job-matching and notification system. It collects remote web-developer jobs from five free public APIs/RSS feeds, filters them for roles open to candidates in Sri Lanka and paid in USD, ranks them with configurable keyword rules, and sends the best matches to each user through the channels that user chooses: **Telegram, email, or an in-app notification centre on the website**. Users apply manually with one tap — the system never submits applications on their behalf.
 
-The system deliberately uses **no AI or machine learning**. Every decision is transparent, deterministic, and driven by rules stored in configuration, which makes the results explainable and cheap to run. The backend is **Laravel (PHP)**, the frontend is **React with Inertia.js**, storage starts as **SQLite** and is designed to move to **Postgres**, and scheduling uses **GitHub Actions** with a dedicated state branch for persistence. The architecture is **multi-tenant from day one**: jobs are fetched once into a shared pool, while scores, notification state, and cover letters are stored per user. This allows the project to evolve into a SaaS where anyone with an account can use the service.
+The system deliberately uses **no AI or machine learning**. Every decision is transparent, deterministic, and driven by rules stored in configuration, which makes the results explainable and cheap to run. The backend is **Laravel (PHP)**, the frontend is a **separate React SPA (Vite + TypeScript)** that talks to the backend through a **Sanctum-protected JSON API**, storage starts as **SQLite** and is designed to move to **Postgres**, and scheduling uses **GitHub Actions** with a dedicated state branch for persistence. The repository is split into `backend/` and `frontend/`. The architecture is **multi-tenant from day one**: jobs are fetched once into a shared pool, while scores, notification state, and cover letters are stored per user. This allows the project to evolve into a SaaS where anyone with an account can use the service.
 
 At the time of writing the planning is complete and implementation has not begun. The roadmap has eight milestones, ending with a SaaS-ready deployment.
 
@@ -101,7 +101,8 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | තීරණය | හේතුව |
 |---|---|
 | **Laravel (PHP)**, Python/FastAPI නෙවෙයි | Auth, notifications, queues, scheduler වගේ SaaS සඳහා ඕන දේවල් Laravel එකේ built-in තියෙනවා. වේගයෙන් සහ අඩු අවදානමකින් ගොඩනගන්න පුළුවන්. |
-| **React + Inertia.js** | Laravel එක්ක ගැළපෙන React පද්ධතියක්; separate SPA එකකට වඩා සරලයි (token කළමනාකරණය අඩුයි). |
+| **`backend/` + `frontend/` වෙන් කිරීම** (2026-11-18 දී ගත් තීරණය) | Backend එක සහ frontend එක වෙන වෙනම තේරුම් ගන්නත්, වෙන වෙනම වැඩ කරන්නත්, පස්සේ වෙන වෙනම deploy කරන්නත් පහසු වෙන්න. |
+| **React SPA (Vite + TypeScript)** — Inertia නෑ | වෙනම `frontend/` app එකක් ඕනේ වුණා. ඒ නිසා Inertia වෙනුවට **Laravel JSON API + Sanctum tokens** පාවිච්චි කරනවා. මේක මුල් තීරණයෙන් වෙනස් වීමක්. |
 | **දැනුම්දීම් ක්‍රම 3යි** | පාවිච්චි කරන කෙනාට තමන්ට ගැළපෙන ක්‍රමය තෝරන්න දෙන්න ඕනේ වුණා. |
 | **Per-user SMTP** | එක system sender එකක් පාවිච්චි කරනවා වෙනුවට එක user කෙනෙක්ගේම ඊමේල් එකෙන් එවනවා — නොමිලේ, වඩා විශ්වාසනීයයි. |
 | **Multi-user schema දැන්ම** | පස්සේ SaaS එකක් කරනකොට data එක නැවත හදන්න ඕනේ නෑ. |
@@ -120,6 +121,19 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 4. **`mil-6` merge කරාට පස්සේ `mil-7-auth` හදන්න.** Auth + React UI milestone එක (§11) කරන්නේ `dev` එකෙන් හදපු `mil-7-auth` branch එකේ. ඊටත් පස්සේ SaaS readiness එක සඳහා එහෙමම අලුත් branch එකක් (`mil-8-saas`) හදන්න.
 5. හැම merge එකකින්ම පස්සේ `dev` එකේ tests ආයෙත් ධාවනය කරලා හොඳින් තියෙනවාද බලන්න.
 
+### Folder ව්‍යුහය
+
+```
+HirePilot/
+├── backend/    → Laravel API + job engine (composer.json, artisan, app/, config/, database/, tests/ …)
+├── frontend/   → React + Vite + TypeScript SPA (package.json, src/ …)
+├── docs/PROJECT_BOOK.md
+├── PLAN.md, AGENTS.md, README.md
+└── .github/workflows/run.yml
+```
+
+Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී files root එකේම තිබුණත්, පැහැදිලි බව සඳහා අපි ඒවා `backend/` එකට ගෙනාවා. සියලු Artisan/Composer/PHPUnit commands `backend/` එකෙන්, සියලු npm commands `frontend/` එකෙන් ධාවනය කරන්න.
+
 ---
 
 ## 5. Tech Stack (භාවිතා කරන තාක්ෂණයන්)
@@ -131,8 +145,8 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | Dependency manager | **Composer** | PHP packages කළමනාකරණය |
 | HTTP client | Laravel `Http` facade / **Guzzle** | API calls, timeouts සහ retries |
 | RSS parsing | **SimplePie** (හෝ laminas-feed) | We Work Remotely RSS feed එක කියවන්න |
-| Frontend | **React + Inertia.js + Vite + TypeScript** | වේගවත්, type-safe UI; Laravel එක්ක හොඳින් ගැළපෙනවා |
-| Auth | **Laravel Breeze** (email + password, sessions) | සරල සහ ආරක්ෂිත login/register |
+| Frontend | **React + Vite + TypeScript** (`frontend/` එකේ වෙනම SPA) | වේගවත්, type-safe UI; backend එකෙන් වෙනම වැඩ කරන්න පුළුවන් |
+| API / Auth | **Laravel JSON API + Sanctum tokens** (email + password) | SPA එකට session නැතුව ආරක්ෂිතව authenticate වෙන්න |
 | Database | **SQLite** (local / Actions) → **Postgres** (SaaS) | මුලින් එක file එකක් නිසා පහසුයි; පස්සේ පරිමාණයට Postgres |
 | Notifications | Telegram Bot API, SMTP (per-user), Laravel database notifications | පාවිච්චි කරන කෙනාගේ තේරීම අනුව |
 | Tests | **PHPUnit** + saved JSON/RSS fixtures | Live network නැතුව විශ්වාසනීය පරීක්ෂණ |
@@ -285,7 +299,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | 4 | Remotive, WWR, Jobicy, Himalayas + cross-source dedupe | `mil-4` | ⬜ Planned |
 | 5 | Notification channels (Telegram/Email/In-app) + cover letter | `mil-5` | ⬜ Planned |
 | 6 | GitHub Actions + state branch + සිංහල README/AGENTS | `mil-6` | ⬜ Planned |
-| 7 | Auth + React UI (Dashboard, Jobs, Settings, Notification centre) | `mil-7-auth` | ⬜ Planned |
+| 7 | Auth (Sanctum) + React SPA (Dashboard, Jobs, Settings, Notification centre) | `mil-7-auth` | ⬜ Planned |
 | 8 | SaaS readiness (Postgres, queues, per-user SMTP UI, deploy guide) | `mil-8-saas` | ⬜ Planned |
 
 ### අදියර වශයෙන් බැලීම
@@ -347,7 +361,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 
 ### Developers සඳහා
 
-- Stack: PHP 8.3+ / Laravel, React + Inertia + Vite + TS, SQLite→Postgres, PHPUnit + fixtures.
+- Stack: PHP 8.3+ / Laravel (`backend/`), React + Vite + TS (`frontend/`), Sanctum API, SQLite→Postgres, PHPUnit + fixtures.
 - එකම source එකක් එකතු කරන්නේ අලුත් adapter file එකක් + config එකේ එක line එකකින් විතරයි.
 - සියලු අගයන් config එකේ හෝ per-user DB settings වල — code එකේ hardcode නෑ.
 - හැම සංකීර්ණ කොටසකටම fixture-පදනම් unit test එකක් තියෙනවා.
@@ -380,6 +394,7 @@ Free APIs / RSS  →  එක් වරක් fetch කරන්න  →  පො�
 | 1.0 | 2026-11-18 | පළමු සංස්කරණය — සැලැස්ම සම්පූර්ණ වූ පසු ලියන ලදී. Implementation තවම ආරම්භ වී නෑ. |
 | 1.1 | 2026-11-18 | Git ශාඛා ප්‍රතිපත්තිය එකතු කළා (mil-1…mil-6 → dev, ඊට පස්සේ mil-7-auth) සහ milestones table එකට Branch තීරුව එකතු කළා. |
 | 1.2 | 2026-11-18 | Milestone 1 සම්පූර්ණ වුණා — table නම් දෙකක වෙනස (`job_postings`, `notification_deliveries`) සහ M1 සාරාංශය/status එකතු කළා. |
+| 1.3 | 2026-11-18 | **`backend/` + `frontend/` folder split** සිදු කළා; Inertia වෙනුවට React SPA + Laravel API/Sanctum තීරණය ලේඛනගත කළා. |
 
 ---
 

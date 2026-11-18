@@ -10,8 +10,9 @@
 |---|---|
 | Backend | **සම්පූර්ණයෙන් Laravel (PHP)** — Python නෑ, hybrid නෑ |
 | PHP පරිචිතත්වය | "ටිකක් දන්නවා" — පියවරෙන් පියවර විස්තර සහිතව ලියන්න |
-| Frontend | **React** (Inertia.js + Vite + TypeScript, එකම repo එකේ) |
-| Auth | **Email + password** (Laravel Breeze / Inertia stack), sessions |
+| Frontend | **React + Vite + TypeScript**, වෙනම `frontend/` SPA එකක් (Inertia නෑ) |
+| Backend ↔ Frontend | **Laravel JSON API + Sanctum tokens** (SPA එක session නැතුව token එකකින් authenticate වෙනවා) |
+| Auth | **Email + password**, Laravel API token (Sanctum) හරහා SPA එකට |
 | Login පසු අතුරු මුහුණත | Dashboard, Jobs, Settings, Notifications පිටු |
 | දැනුම්දීම් නාලිකා | **Telegram, Email, in-app (වෙබ් එකේ notification center)** — එක් එක් user තෝරාගන්නවා |
 | Email යැවීම | **Per-user SMTP** credentials (encrypted) + local `.env` fallback |
@@ -79,78 +80,47 @@
 
 ## 4. ව්‍යාපෘති ව්‍යුහය (Project structure)
 
-සියල්ල දැනට සිටින `C:\xampp-new\htdocs\projects\HirePilot` (git repo root) එකේම හදන්න:
+Repo root එකේ (`C:\xampp-new\htdocs\projects\HirePilot`) **backend සහ frontend කියලා දෙකක් වෙන වෙනම** තියෙනවා:
 
 ```
 HirePilot/
-├── README.md                       # සිංහල setup + tune කරන ආකාරය
-├── AGENTS.md                       # සිංහල නීති (§2 සාරාංශය) + test/dry-run commands
-├── PLAN.md                         # මෙම ලේඛනය
-├── composer.json
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── .env.example
+├── README.md, AGENTS.md, PLAN.md
+├── docs/PROJECT_BOOK.md
 ├── .github/workflows/run.yml        # cron + workflow_dispatch + state branch
-├── config/jobhunter.php             # සියලු default අගයන් (මුල් config.yaml වෙනුවට)
-├── database/
-│   ├── migrations/                  # users, jobs, user_jobs, user_channels, notifications, user_settings
-│   ├── factories/
-│   └── seeders/DefaultUserSeeder.php
-├── app/
-│   ├── Models/
-│   │   ├── User.php
-│   │   ├── JobPosting.php           # global job_postings table එකට (Laravel queue `jobs` එක්ක නොපැටලෙන්න)
-│   │   ├── UserJob.php
-│   │   ├── UserSetting.php
-│   │   ├── UserChannel.php
-│   │   └── NotificationDelivery.php # audit log (standard `notifications` එක in-app සඳහා වෙන් කරලා)
-│   ├── DTO/JobData.php              # readonly DTO (මුල් Job dataclass එකට සමාන)
-│   ├── Services/
-│   │   ├── Sources/
-│   │   │   ├── Source.php           # interface: name(), fetch(): array — කවදාවත් throw කරන්නේ නෑ
-│   │   │   ├── RemoteOkSource.php
-│   │   │   ├── RemotiveSource.php
-│   │   │   ├── WeWorkRemotelySource.php
-│   │   │   ├── JobicySource.php
-│   │   │   └── HimalayasSource.php
-│   │   ├── FetchService.php         # සියලු sources එකතු කරලා global jobs upsert කරනවා
-│   │   ├── FilterPipeline.php
-│   │   ├── ScoringService.php
-│   │   ├── DedupeService.php
-│   │   ├── CoverLetterService.php
-│   │   ├── NotificationDispatcher.php
-│   │   └── Notifiers/
-│   │       ├── Notifier.php         # interface: send(User $u, array $items): SendResult
-│   │       ├── TelegramNotifier.php
-│   │       ├── EmailNotifier.php
-│   │       └── InAppNotifier.php
-│   ├── Jobs/                        # queued jobs (Phase C): FetchJobs, DispatchNotifications
-│   ├── Http/Controllers/            # Inertia controllers: Dashboard, JobController, SettingsController, NotificationController
-│   ├── Console/Commands/JobHunterRun.php   # php artisan jobhunter:run [--dry-run]
-│   └── Providers/JobHunterServiceProvider.php
-├── resources/
-│   ├── views/cover_letter.md.tpl    # {company}, {job_title}, {matched_skills}, {my_name}, {portfolio_url}
-│   ├── js/
-│   │   ├── app.tsx                  # Inertia bootstrap
-│   │   ├── Pages/Auth/Login.tsx, Register.tsx
-│   │   ├── Pages/Dashboard.tsx
-│   │   ├── Pages/Jobs/Index.tsx
-│   │   ├── Pages/Settings/Profile.tsx, Filters.tsx, Channels.tsx
-│   │   └── Pages/Notifications/Index.tsx
-│   └── css/app.css
-├── routes/web.php
-├── storage/app/fixtures/            # saved sample API/RSS responses (tests වලට විතරයි)
-└── tests/
-    ├── Unit/Sources/                # fixture එකෙන් parse කරනවා, live network නෑ
-    ├── Unit/FilterPipelineTest.php
-    ├── Unit/ScoringServiceTest.php
-    ├── Unit/DedupeServiceTest.php
-    ├── Feature/NotificationDispatcherTest.php   # mock HTTP / fake mail
-    └── Feature/AuthTest.php
+├── backend/                         # Laravel API + job engine
+│   ├── composer.json, composer.lock, artisan, phpunit.xml, .env.example
+│   ├── config/jobhunter.php         # සියලු default අගයන් (මුල් config.yaml වෙනුවට)
+│   ├── database/
+│   │   ├── migrations/              # users, job_postings, user_jobs, user_channels, notification_deliveries, user_settings
+│   │   ├── factories/
+│   │   └── seeders/DefaultUserSeeder.php
+│   ├── app/
+│   │   ├── Models/                  # User, JobPosting, UserJob, UserSetting, UserChannel, NotificationDelivery
+│   │   ├── DTO/JobData.php
+│   │   ├── Services/
+│   │   │   ├── Sources/             # Source interface + 5 adapters
+│   │   │   ├── FetchService.php, FilterPipeline.php, ScoringService.php
+│   │   │   ├── DedupeService.php, CoverLetterService.php, NotificationDispatcher.php
+│   │   │   └── Notifiers/           # Telegram, Email, InApp
+│   │   ├── Http/Controllers/Api/    # SPA එකට JSON දෙන controllers (Sanctum-protected)
+│   │   ├── Console/Commands/JobHunterRun.php
+│   │   └── Providers/JobHunterServiceProvider.php
+│   ├── routes/api.php               # SPA API routes
+│   ├── resources/views/cover_letter.md.tpl
+│   ├── storage/app/fixtures/        # saved sample API/RSS responses (tests වලට විතරයි)
+│   └── tests/{Unit,Feature}/
+└── frontend/                        # React + Vite + TypeScript SPA
+    ├── package.json, tsconfig.json, vite.config.ts, index.html
+    └── src/
+        ├── main.tsx, App.tsx, styles.css
+        ├── api/client.ts            # backend API එක්ක කතා කරන layer
+        ├── pages/                   # Login, Register, Dashboard, Jobs, Settings, Notifications
+        └── components/
 ```
 
-**අලුත් source එකක් එකතු කරන්නේ කොහොමද?** අලුත් `app/Services/Sources/XxxSource.php` එකක් හදලා, `config/jobhunter.php` එකේ `sources` යටතේ එක line එකක් එකතු කරන්න. වෙන කිසිම තැනක වෙනස් කරන්න ඕනේ නෑ.
+> **Path සටහන:** මේ ලේඛනයේ ඉදිරියේදී `app/...`, `config/...`, `tests/...` කියලා තියෙන ඕනෑම තැනක අදහස **`backend/app/...`, `backend/config/...`, `backend/tests/...`** කියන එකයි. Frontend ගැන කියන ඕනෑම තැනක අදහස `frontend/...`.
+
+**අලුත් source එකක් එකතු කරන්නේ කොහොමද?** අලුත් `backend/app/Services/Sources/XxxSource.php` එකක් හදලා, `backend/config/jobhunter.php` එකේ `sources` යටතේ එක line එකක් එකතු කරන්න. වෙන කිසිම තැනක වෙනස් කරන්න ඕනේ නෑ.
 
 ---
 
@@ -211,7 +181,7 @@ interface Source {
 
 ## 7. ජොබ් මූලාශ්‍ර (Sources)
 
-**Code ලියන්න කලින් එක් එක් endpoint එක නිල docs හෝ live sample එකකින් තහවුරු කරන්න**, ඊට පස්සේ කෙටි පිටපතක් `storage/app/fixtures/` එකේ save කරන්න.
+**Code ලියන්න කලින් එක් එක් endpoint එක නිල docs හෝ live sample එකකින් තහවුරු කරන්න**, ඊට පස්සේ කෙටි පිටපතක් `backend/storage/app/fixtures/` එකේ save කරන්න.
 
 | Source | Type | වැදගත් දේවල් |
 |---|---|---|
@@ -379,7 +349,7 @@ return [
 4. **Remaining sources + dedupe** — Remotive, WWR, Jobicy, Himalayas; එක් එක්ට fixtures + tests; cross-source dedupe.
 5. **Notifications + cover letter** — 3 notifiers, dispatcher, retry logic, template filling; mock HTTP/mail වලින් tests.
 6. **Actions + state + docs** — `run.yml` (state branch, concurrency), සිංහල `README.md` සහ `AGENTS.md` (setup, BotFather, per-user SMTP, config tune කරන හැටි). *මෙතැනදී local version එක සම්පූර්ණයෙන් වැඩ කරනවා (default user, no UI).*
-7. **Auth + React UI (Phase B)** — Breeze/Inertia React, login/register, Dashboard, Jobs list, Settings (profile/skills/filters/channels), Notifications center + unread badge. In-app notifications මෙතැනදී පණ ගන්නවා.
+7. **Auth + React SPA (Phase B)** — Sanctum token එක්ක login/register API, `frontend/` එකේ Login/Register/Dashboard/Jobs/Settings/Notifications පිටු, unread badge එක්ක. In-app notifications මෙතැනදී පණ ගන්නවා.
 8. **SaaS readiness (Phase C)** — Postgres migration path, queues, per-user SMTP settings UI, basic plan/limits placeholder (billing integrate කරන්නේ නෑ — placeholder විතරයි), deployment guide.
 
 ---
@@ -399,5 +369,5 @@ return [
 
 - එක් එක් source එකේ නිල docs / live sample එක පරීක්ෂා කරලා fixtures save කරන්න (Milestone 2 දී).
 - Laravel version එක install වෙලාවේ තහවුරු කරන්න (latest stable/LTS).
-- Inertia + React පත් කරගන්න (ඔබට වෙනම SPA එකක් ඕනේ නම් Sanctum එකට මාරු වෙන්න පුළුවන් — ඒක කලින් කියන්න).
+- ~~Inertia + React~~ වෙනුවට **වෙනම React SPA + Laravel API/Sanctum** තෝරගත්තා (2026-11-18, folder structure තීරණය අනුව). Milestone 7 දී `laravel/sanctum` dependency එක එකතු කරන්න ඕනේ — ඒ වෙලාවේ අනිවාර්යයෙන් අහන්න.
 - **දැනටමත් එකඟ වුණු config placeholders (`My Name`, `https://...`) පස්සේ ඔබම වෙනස් කරගන්නවා.**
