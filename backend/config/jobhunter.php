@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Services\Sources\HimalayasSource;
+use App\Services\Sources\JobicySource;
 use App\Services\Sources\RemoteOkSource;
+use App\Services\Sources\RemotiveSource;
+use App\Services\Sources\WeWorkRemotelySource;
 
 return [
     /*
@@ -72,10 +76,10 @@ return [
     'sources' => [
         // Adding a source needs one adapter file plus one line here.
         'remoteok' => ['enabled' => true, 'adapter' => RemoteOkSource::class],
-        'remotive' => ['enabled' => true],
-        'weworkremotely' => ['enabled' => true],
-        'jobicy' => ['enabled' => true],
-        'himalayas' => ['enabled' => true],
+        'remotive' => ['enabled' => true, 'adapter' => RemotiveSource::class],
+        'weworkremotely' => ['enabled' => true, 'adapter' => WeWorkRemotelySource::class],
+        'jobicy' => ['enabled' => true, 'adapter' => JobicySource::class],
+        'himalayas' => ['enabled' => true, 'adapter' => HimalayasSource::class],
     ],
 
     /*

@@ -1,0 +1,27 @@
+{
+  "job-count": 2,
+  "jobs": [
+    {
+      "id": 5001,
+      "url": "https://remotive.com/remote-jobs/software-development/sample-react-developer-5001",
+      "title": "React Developer",
+      "company_name": "Acme Remote",
+      "candidate_required_location": "Worldwide",
+      "publication_date": "2026-11-18T06:00:00",
+      "salary": "$70k - $90k",
+      "tags": ["react", "javascript"],
+      "description": "<p>Build web applications with React.</p>"
+    },
+    {
+      "id": 5002,
+      "url": "https://remotive.com/remote-jobs/software-development/sample-ops-5002",
+      "title": "Operations Coordinator",
+      "company_name": "Example Ops",
+      "candidate_required_location": "",
+      "publication_date": "2026-11-17T06:00:00",
+      "salary": "",
+      "tags": [],
+      "description": "<p>Coordinate operations.</p>"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ class RemoteOkSourceTest extends TestCase
 
     public function test_normalize_skips_legal_metadata_and_maps_fields(): void
     {
-        $jobs = (new RemoteOkSource)->normalize($this->fixturePayload());
+        $jobs = app(RemoteOkSource::class)->normalize($this->fixturePayload());
 
         $this->assertCount(2, $jobs);
 
@@ -46,7 +46,7 @@ class RemoteOkSourceTest extends TestCase
 
     public function test_normalize_handles_missing_optional_fields(): void
     {
-        $jobs = (new RemoteOkSource)->normalize([
+        $jobs = app(RemoteOkSource::class)->normalize([
             ['legal' => 'terms'],
             ['id' => '2', 'position' => 'Developer', 'url' => 'https://remoteok.com/jobs/2'],
         ]);
@@ -68,7 +68,7 @@ class RemoteOkSourceTest extends TestCase
         Http::preventStrayRequests();
         Http::fake(['remoteok.com/api' => Http::response($this->fixturePayload())]);
 
-        $jobs = (new RemoteOkSource)->fetch();
+        $jobs = app(RemoteOkSource::class)->fetch();
 
         $this->assertCount(2, $jobs);
         Http::assertSent(
@@ -81,7 +81,7 @@ class RemoteOkSourceTest extends TestCase
         Http::preventStrayRequests();
         Http::fake(['remoteok.com/api' => Http::failedConnection()]);
 
-        $this->assertSame([], (new RemoteOkSource)->fetch());
+        $this->assertSame([], app(RemoteOkSource::class)->fetch());
     }
 
     public function test_fetch_returns_empty_list_on_server_error(): void
@@ -89,6 +89,6 @@ class RemoteOkSourceTest extends TestCase
         Http::preventStrayRequests();
         Http::fake(['remoteok.com/api' => Http::response('server error', 500)]);
 
-        $this->assertSame([], (new RemoteOkSource)->fetch());
+        $this->assertSame([], app(RemoteOkSource::class)->fetch());
     }
 }

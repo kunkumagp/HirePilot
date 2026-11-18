@@ -45,7 +45,7 @@
 
 - **Phase A (local):** වියදම `$0` — නොමිලේ tools/APIs විතරයි. **Phase C (SaaS):** අවශ්‍ය වුණොත් අඩු මිලේ hosting/domain ගෙවන්න පුළුවන් (user අවසරය ඇත).
 - **කිසිම AI/LLM/ML API එකක් හෝ model එකක් නෑ.** සියලු තීරණ keyword/rule මත පදනම් වෙනවා.
-- **Backend:** PHP 8.3+ සහ Laravel (install කරන අවස්ථාවේ latest stable / LTS — 12.x හෝ ඊට පසු). Composer dependencies: `laravel/framework`, HTTP සඳහා `guzzlehttp/guzzle` (හෝ Laravel `Http` facade එක පමණයි), RSS සඳහා `simplepie/simplepie` (හෝ `laminas/laminas-feed`). Dev: `phpunit/phpunit`. **අලුත් dependency එකක් එකතු කරන්න කලින් අනිවාර්යයෙන් අහන්න.**
+- **Backend:** PHP 8.3+ සහ Laravel (install කරන අවස්ථාවේ latest stable / LTS — 12.x හෝ ඊට පසු). Composer dependencies: `laravel/framework`, HTTP සඳහා Laravel `Http` facade / `guzzlehttp/guzzle`. RSS සඳහා **PHP එකේම built-in SimpleXML** පාවිච්චි කරනවා (මුල් සැලැස්මේ `simplepie/simplepie` තිබුණත්, "prefer standard library" නීතිය අනුව අලුත් dependency එකක් එපා කළා — Milestone 4 දී තීරණය). Dev: `phpunit/phpunit`. **අලුත් dependency එකක් එකතු කරන්න කලින් අනිවාර්යයෙන් අහන්න.**
 - **Frontend:** React + Vite + TypeScript (npm dependencies එකතු කිරීමේදීත් සාකච්ඡා කරන්න).
 - **Storage:** Phase A සහ GitHub Actions වල **SQLite** (එක file එකක්, `database/database.sqlite`). Phase C දී **Postgres** (Neon/Supabase වගේ) වලට මාරු වෙන්න හැඩ කරන්න — schema එක portable ලෙස ලියන්න, DB-specific SQL වළකින්න.
 - **මූලාශ්‍ර:** නිල API/RSS විතරයි. Scraping තහනම් කරලා තියෙන sites නෑ. එක් එක් source එකේ rate limit සහ attribution නීති රකින්න. සියලු requests වල descriptive `User-Agent` එකක් දාන්න. **RemoteOK එකේ ජොබ් URL එකට link back කරන්න ඕනේ.**

@@ -1,0 +1,36 @@
+{
+  "updatedAt": 1794981600,
+  "jobs": [
+    {
+      "title": "React Developer",
+      "companyName": "Acme Remote",
+      "applicationLink": "https://himalayas.app/companies/acme/jobs/react-developer",
+      "guid": "https://himalayas.app/companies/acme/jobs/react-developer",
+      "description": "<p>Build web applications with React.</p>",
+      "excerpt": "Build web applications with React.",
+      "locationRestrictions": ["Worldwide"],
+      "categories": ["React-Developer"],
+      "parentCategories": ["Engineering"],
+      "minSalary": 70000,
+      "maxSalary": 90000,
+      "salaryPeriod": "annual",
+      "currency": "USD",
+      "pubDate": 1794981600
+    },
+    {
+      "title": "Operations Coordinator",
+      "companyName": "Example Ops",
+      "applicationLink": "https://himalayas.app/companies/example/jobs/operations-coordinator",
+      "guid": "https://himalayas.app/companies/example/jobs/operations-coordinator",
+      "description": "<p>Coordinate operations.</p>",
+      "excerpt": "Coordinate operations.",
+      "locationRestrictions": [],
+      "categories": ["Operations-Coordinator"],
+      "parentCategories": [],
+      "minSalary": null,
+      "maxSalary": null,
+      "currency": null,
+      "pubDate": 1794895200
+    }
+  ]
+}

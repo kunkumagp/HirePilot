@@ -14,6 +14,24 @@ class JobPosting extends Model
     /** @use HasFactory<JobPostingFactory> */
     use HasFactory;
 
+    /** @var list<string> */
+    protected $fillable = [
+        'source',
+        'external_id',
+        'title',
+        'company',
+        'url',
+        'description',
+        'location_text',
+        'tags',
+        'salary_min',
+        'salary_max',
+        'salary_currency',
+        'posted_at',
+        'first_seen_at',
+        'content_hash',
+    ];
+
     protected function casts(): array
     {
         return [
