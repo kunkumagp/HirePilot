@@ -83,7 +83,13 @@ export function JobDetailPage() {
 
         <div className="detail-section">
           <h3>Full job description</h3>
-          <pre className="job-description">{job.description || 'No description provided by the source.'}</pre>
+          <div className="job-description">
+            {(job.description || 'No description provided by the source.')
+              .split(/\n\s*\n/)
+              .map((paragraph) => paragraph.trim())
+              .filter(Boolean)
+              .map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+          </div>
         </div>
 
         {job.tags.length > 0 ? (

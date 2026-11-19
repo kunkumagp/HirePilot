@@ -40,7 +40,7 @@ class RemoteOkSourceTest extends TestCase
         $this->assertSame(60000.0, $first->salaryMin);
         $this->assertSame(90000.0, $first->salaryMax);
         $this->assertSame('USD', $first->salaryCurrency);
-        $this->assertSame('About the Role Build web interfaces with React and TypeScript.', $first->description);
+        $this->assertSame("About the Role\n\nBuild web interfaces with React and TypeScript.", $first->description);
         $this->assertNotNull($first->postedAt);
     }
 
