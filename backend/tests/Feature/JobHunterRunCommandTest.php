@@ -12,6 +12,7 @@ use App\Models\UserJob;
 use App\NotificationChannel;
 use App\Notifications\JobMatchNotification;
 use App\Services\Sources\RemoteOkSource;
+use App\Services\UserSettingsService;
 use Database\Seeders\DefaultUserSeeder;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
@@ -39,6 +40,7 @@ class JobHunterRunCommandTest extends TestCase
         ]);
         Http::preventStrayRequests();
         Http::fake(['remoteok.com/api' => Http::response($this->fixturePayload())]);
+        $this->seed(DefaultUserSeeder::class);
 
         $this->artisan('jobhunter:run', ['--dry-run' => true])
             ->expectsOutputToContain('DRY RUN (no notifications will be sent)')
@@ -102,5 +104,31 @@ class JobHunterRunCommandTest extends TestCase
 
         $this->assertSame(1, UserJob::count());
         Notification::assertSentTo($user, JobMatchNotification::class);
+    }
+
+    public function test_live_run_processes_every_active_user(): void
+    {
+        config([
+            'jobhunter.sources' => [
+                'remoteok' => ['enabled' => true, 'adapter' => RemoteOkSource::class],
+            ],
+        ]);
+        Http::preventStrayRequests();
+        Http::fake(['remoteok.com/api' => Http::response($this->fixturePayload())]);
+
+        $first = User::factory()->create(['email' => 'first@example.test']);
+        $second = User::factory()->create(['email' => 'second@example.test']);
+        app(UserSettingsService::class)->createDefaults($first);
+        app(UserSettingsService::class)->createDefaults($second);
+
+        $this->artisan('jobhunter:run')
+            ->expectsOutputToContain('Active users: 2')
+            ->expectsOutputToContain('first@example.test')
+            ->expectsOutputToContain('second@example.test')
+            ->assertSuccessful();
+
+        $this->assertSame(2, UserJob::count());
+        $this->assertSame(1, UserJob::where('user_id', $first->id)->count());
+        $this->assertSame(1, UserJob::where('user_id', $second->id)->count());
     }
 }

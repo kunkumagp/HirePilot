@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\DTO\JobData;
-use App\DTO\ScoreResult;
 use App\Models\JobPosting;
 use App\Models\User;
 use App\Services\FetchService;
-use App\Services\FilterPipeline;
-use App\Services\JobNotificationService;
-use App\Services\ScoringService;
 use App\Services\Sources\Source;
+use App\Services\UserPipelineService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -24,9 +21,7 @@ class JobHunterRunCommand extends Command
 {
     public function __construct(
         private readonly FetchService $fetchService,
-        private readonly FilterPipeline $filterPipeline,
-        private readonly ScoringService $scoringService,
-        private readonly JobNotificationService $jobNotifications,
+        private readonly UserPipelineService $userPipeline,
     ) {
         parent::__construct();
     }
@@ -78,44 +73,59 @@ class JobHunterRunCommand extends Command
             $this->line(sprintf('  %-14s unique %d', $source->name(), count($jobs)));
         }
 
-        $user = User::where('email', config('jobhunter.profile.email'))->first();
-        $settings = $user?->userSetting;
-        $minScore = (int) ($settings?->min_score ?? config('jobhunter.scoring.min_score', 5));
+        $users = User::query()
+            ->where('is_active', true)
+            ->with('userSetting')
+            ->orderBy('id')
+            ->get();
 
-        /** @var list<array{job: JobData, score: ScoreResult, salaryUnknown: bool}> $matches */
-        $matches = [];
+        /** @var list<array{user: User, result: array{matches: array, new: int, notified: int}}> $results */
+        $results = [];
+        $totals = ['matches' => 0, 'new' => 0, 'notified' => 0];
 
-        foreach ($allJobs as $job) {
-            $filterResult = $this->filterPipeline->apply($job, $settings);
+        foreach ($users as $user) {
+            $result = $this->userPipeline->run($user, $allJobs, ! $isDryRun);
+            $results[] = ['user' => $user, 'result' => $result];
 
-            if (! $filterResult->passed) {
-                continue;
-            }
-
-            $matches[] = [
-                'job' => $job,
-                'score' => $this->scoringService->score($job, $settings, $filterResult->locationUncertain),
-                'salaryUnknown' => $filterResult->salaryUnknown,
-                'locationUncertain' => $filterResult->locationUncertain,
-            ];
-        }
-
-        $counts = ['new' => 0, 'notified' => 0];
-
-        if ($user !== null) {
-            $counts = $this->jobNotifications->process($user, $matches, ! $isDryRun);
+            $totals['matches'] += count($result['matches']);
+            $totals['new'] += $result['new'];
+            $totals['notified'] += $result['notified'];
         }
 
         $this->line('Fetched: '.count($allJobs));
-        $this->line('After filters: '.count($matches));
-        $this->line('New: '.$counts['new']);
-        $this->line('Notified: '.$counts['notified']);
+        $this->line('Active users: '.$users->count());
 
-        foreach (collect($matches)->groupBy(fn (array $match): string => $match['job']->source) as $sourceName => $items) {
+        foreach ($results as $entry) {
+            $this->line(sprintf(
+                '  %-30s matched %d, new %d, notified %d',
+                $entry['user']->email,
+                count($entry['result']['matches']),
+                $entry['result']['new'],
+                $entry['result']['notified'],
+            ));
+        }
+
+        $this->line('After filters: '.$totals['matches']);
+        $this->line('New: '.$totals['new']);
+        $this->line('Notified: '.$totals['notified']);
+
+        foreach ($results as $entry) {
+            $matches = $entry['result']['matches'];
+
+            if ($matches === []) {
+                continue;
+            }
+
+            $minScore = (int) ($entry['user']->userSetting?->min_score ?? config('jobhunter.scoring.min_score', 5));
+
             $this->newLine();
-            $this->line($sourceName.' ('.$items->count().'):');
+            $this->line($entry['user']->email.' — top matches:');
 
-            foreach ($items as $item) {
+            $topMatches = collect($matches)
+                ->sortByDesc(fn (array $match): int => $match['score']->score)
+                ->take(10);
+
+            foreach ($topMatches as $item) {
                 $job = $item['job'];
                 $score = $item['score'];
                 $belowThreshold = $score->score < $minScore ? ' (below min_score)' : '';
@@ -141,7 +151,9 @@ class JobHunterRunCommand extends Command
             }
         }
 
-        if ($matches === []) {
+        if ($users->isEmpty()) {
+            $this->comment('No active users. Register an account or run the DefaultUserSeeder.');
+        } elseif ($totals['matches'] === 0) {
             $this->comment('No jobs matched the filters. Tune config/jobhunter.php if this is unexpected.');
         }
 
