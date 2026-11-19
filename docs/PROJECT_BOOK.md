@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.1 · Last updated: 2026-11-18
+> **Living document** · Version 2.2 · Last updated: 2026-11-19
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -326,6 +326,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Milestone 8 සාරාංශය (2026-11-18):** SaaS සඳහා හැඩය සූදානම් වුණා. `users.plan` (`free`/`pro`) එකතු වුණා; `config/jobhunter.php` එකේ `plans` සීමා අනුව `NotificationDispatcher` එක එක run එකක යවන දැනුම්දීම් ගාණ සීමා කරනවා (user ගේ අගය සහ plan එකේ අගයෙන් අඩුම එක ගන්නවා). `notify.use_queue = true` උන විට `DispatchUserNotifications` queued job එක notification බාර ගන්නවා — local/Actions එකේ නම් සින්ක්‍රොනස්වම යනවා. `routes/console.php` එකේ විනාඩි 30ක schedule එකකුත් තියෙනවා (SaaS host එකක `schedule:run` එක්ක පාවිච්චි වෙනවා). Postgres path, queue worker, `APP_KEY` ස්ථිරත්වය, frontend deployment සහ plan placeholder ගැන සිංහල deployment guide එක README එකේ එකතු වුණා. **Payment/billing integrate කරලා නෑ — placeholder විතරයි.** **PHPUnit: 69 tests, 227 assertions — pass.**
 
+**Post-release (2026-11-19) — සියලු active users සඳහා pipeline:** කලින් `jobhunter:run` එක config එකේ සිටි default user ට විතරක් ජොබ් දුන්නා. දැන් එකම fetch එකකින් පස්සේ සියලුම `is_active = true` users ගේ තමන්ගේ settings අනුව filter → score → store → notify කරනවා. මේක `UserPipelineService` එකකට අදාළ කරලා තියෙනවා, ඒ නිසා tenant-isolation එක unit/feature test එකකින් ඔප්පු වෙනවා — එක user ගේ නීති අනිත් අයගේ ප්‍රතිඵල වලට බලපාන්නේ නෑ. CLI output එකත් දැන් per-user counts (`matched / new / notified`) පෙන්නනවා. **PHPUnit: 73 tests, 246 assertions — pass.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -419,6 +421,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 1.9 | 2026-11-18 | Milestone 6 සම්පූර්ණ වුණා — GitHub Actions workflow, state-branch persistence, සිංහල README; MVP එක සම්පූර්ණයි. |
 | 2.0 | 2026-11-18 | Milestone 7 සම්පූර්ණ වුණා — Sanctum auth API සහ React SPA (Phase B ආරම්භය); dependency අනුමැතියත් සටහන් කළා. |
 | 2.1 | 2026-11-18 | Milestone 8 සම්පූර්ණ වුණා — plan limits, queued notifications, scheduler සහ SaaS deployment guide; සියලු milestones සම්පූර්ණයි. |
+| 2.2 | 2026-11-19 | `jobhunter:run` එක සියලු active users ට ධාවනය වෙන විදිහට වෙනස් කළා (`UserPipelineService` + tenant isolation tests). |
 
 ---
 
