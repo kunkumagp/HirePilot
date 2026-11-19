@@ -4,6 +4,7 @@ export interface User {
   email: string;
   portfolio_url: string | null;
   is_active: boolean;
+  plan: 'free' | 'pro';
 }
 
 export interface Job {

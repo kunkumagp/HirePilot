@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthShell } from '../components/AuthShell';
 import { useAuth } from '../context/AuthContext';
 
 export function Login() {
@@ -26,30 +27,34 @@ export function Login() {
   };
 
   return (
-    <section className="auth-card">
-      <h1>Sign in</h1>
-      <form onSubmit={(event) => void submit(event)}>
+    <AuthShell
+      title="Welcome back"
+      subtitle="Sign in to your HirePilot workspace."
+      footer={
+        <>
+          New here? <Link to="/register">Create an account</Link>
+        </>
+      }
+    >
+      <form className="auth-form" onSubmit={(event) => void submit(event)}>
         <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <span>Email address</span>
+          <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
         </label>
         <label>
-          Password
+          <span>Password</span>
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             required
           />
         </label>
-        {error ? <p className="error">{error}</p> : null}
-        <button type="submit" disabled={busy}>
+        {error ? <p className="alert alert-error">{error}</p> : null}
+        <button type="submit" className="button button-primary button-block" disabled={busy}>
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
-      <p className="muted">
-        No account? <Link to="/register">Register</Link>
-      </p>
-    </section>
+    </AuthShell>
   );
 }

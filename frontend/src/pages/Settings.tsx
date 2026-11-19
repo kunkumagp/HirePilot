@@ -25,6 +25,7 @@ export function Settings() {
   const [smtpUsername, setSmtpUsername] = useState('');
   const [smtpPassword, setSmtpPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -50,92 +51,211 @@ export function Settings() {
   }, []);
 
   const save = async () => {
+    setSaving(true);
     setMessage(null);
-    await api('/settings', {
-      method: 'PUT',
-      body: JSON.stringify({
-        name,
-        portfolio_url: portfolioUrl || null,
-        skills: skills
-          .split(',')
-          .map((item) => item.trim())
-          .filter(Boolean),
-        min_score: Number(minScore),
-        max_age_days: Number(maxAgeDays),
-        min_salary_usd_yearly: Number(minSalary),
-      }),
-    });
 
-    const channels = [
-      {
-        type: 'telegram',
-        enabled: enabled.telegram,
-        target: telegramTarget || null,
-        credentials: botToken ? { bot_token: botToken } : undefined,
-      },
-      {
-        type: 'email',
-        enabled: enabled.email,
-        target: emailTarget || null,
-        credentials: smtpHost
-          ? {
-              smtp_host: smtpHost,
-              smtp_port: Number(smtpPort),
-              smtp_username: smtpUsername,
-              smtp_password: smtpPassword,
-            }
-          : undefined,
-      },
-      { type: 'inapp', enabled: enabled.inapp, target: null },
-    ];
+    try {
+      await api('/settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+          name,
+          portfolio_url: portfolioUrl || null,
+          skills: skills.split(',').map((item) => item.trim()).filter(Boolean),
+          min_score: Number(minScore),
+          max_age_days: Number(maxAgeDays),
+          min_salary_usd_yearly: Number(minSalary),
+        }),
+      });
 
-    for (const channel of channels) {
-      await api('/channels', { method: 'POST', body: JSON.stringify(channel) });
+      const channels = [
+        {
+          type: 'telegram',
+          enabled: enabled.telegram,
+          target: telegramTarget || null,
+          credentials: botToken ? { bot_token: botToken } : undefined,
+        },
+        {
+          type: 'email',
+          enabled: enabled.email,
+          target: emailTarget || null,
+          credentials: smtpHost
+            ? {
+                smtp_host: smtpHost,
+                smtp_port: Number(smtpPort),
+                smtp_username: smtpUsername,
+                smtp_password: smtpPassword,
+              }
+            : undefined,
+        },
+        { type: 'inapp', enabled: enabled.inapp, target: null },
+      ];
+
+      for (const channel of channels) {
+        await api('/channels', { method: 'POST', body: JSON.stringify(channel) });
+      }
+
+      setMessage('Settings saved successfully.');
+    } catch (cause) {
+      setMessage(cause instanceof Error ? cause.message : 'Could not save settings');
+    } finally {
+      setSaving(false);
     }
-
-    setMessage('Settings saved.');
   };
 
   if (!loaded) {
-    return <p className="muted">Loading settings…</p>;
+    return <div className="panel"><p className="empty-state">Loading settings…</p></div>;
   }
 
   return (
-    <section>
-      <h1>Settings</h1>
-      <div className="grid">
-        <article className="card">
-          <h2>Profile & matching</h2>
-          <label>Name<input value={name} onChange={(e) => setName(e.target.value)} /></label>
-          <label>Portfolio URL<input value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} /></label>
-          <label>Skills (comma separated)<input value={skills} onChange={(e) => setSkills(e.target.value)} /></label>
-          <label>Minimum score<input type="number" value={minScore} onChange={(e) => setMinScore(Number(e.target.value))} /></label>
-          <label>Max age (days)<input type="number" value={maxAgeDays} onChange={(e) => setMaxAgeDays(Number(e.target.value))} /></label>
-          <label>Minimum USD salary<input type="number" value={minSalary} onChange={(e) => setMinSalary(Number(e.target.value))} /></label>
-        </article>
-
-        <article className="card">
-          <h2>Notification channels</h2>
-          <label>
-            <input type="checkbox" checked={enabled.telegram} onChange={(e) => setEnabled({ ...enabled, telegram: e.target.checked })} /> Telegram
-          </label>
-          <label>Chat ID<input value={telegramTarget} onChange={(e) => setTelegramTarget(e.target.value)} /></label>
-          <label>Bot token<input type="password" value={botToken} onChange={(e) => setBotToken(e.target.value)} /></label>
-          <label>
-            <input type="checkbox" checked={enabled.email} onChange={(e) => setEnabled({ ...enabled, email: e.target.checked })} /> Email
-          </label>
-          <label>Email address<input type="email" value={emailTarget} onChange={(e) => setEmailTarget(e.target.value)} /></label>
-          <label>SMTP host<input value={smtpHost} onChange={(e) => setSmtpHost(e.target.value)} /></label>
-          <label>SMTP port<input value={smtpPort} onChange={(e) => setSmtpPort(e.target.value)} /></label>
-          <label>SMTP username<input value={smtpUsername} onChange={(e) => setSmtpUsername(e.target.value)} /></label>
-          <label>SMTP password<input type="password" value={smtpPassword} onChange={(e) => setSmtpPassword(e.target.value)} /></label>
-          <label>
-            <input type="checkbox" checked={enabled.inapp} onChange={(e) => setEnabled({ ...enabled, inapp: e.target.checked })} /> Website notifications
-          </label>
-        </article>
+    <section className="page">
+      <div className="page-heading">
+        <div>
+          <h2>Preferences</h2>
+          <p className="muted">Control what HirePilot matches and how it reaches you.</p>
+        </div>
       </div>
-      {message ? <p className="success">{message}</p> : null}
-      <button type="button" onClick={() => void save()}>Save settings</button>
+
+      <div className="settings-grid">
+        <div className="panel">
+          <div className="panel-head">
+            <div>
+              <h3>Profile &amp; matching</h3>
+              <p className="muted">Used to score jobs and fill your cover letter.</p>
+            </div>
+          </div>
+
+          <div className="form-grid">
+            <label>
+              <span>Name</span>
+              <input value={name} onChange={(event) => setName(event.target.value)} />
+            </label>
+            <label>
+              <span>Portfolio URL</span>
+              <input value={portfolioUrl} onChange={(event) => setPortfolioUrl(event.target.value)} />
+            </label>
+            <label className="span-two">
+              <span>Skills</span>
+              <input
+                value={skills}
+                onChange={(event) => setSkills(event.target.value)}
+                placeholder="react, php, laravel"
+              />
+              <small className="help-text">Separate skills with commas.</small>
+            </label>
+            <label>
+              <span>Minimum score</span>
+              <input type="number" value={minScore} onChange={(event) => setMinScore(Number(event.target.value))} />
+            </label>
+            <label>
+              <span>Max job age (days)</span>
+              <input type="number" value={maxAgeDays} onChange={(event) => setMaxAgeDays(Number(event.target.value))} />
+            </label>
+            <label className="span-two">
+              <span>Minimum yearly USD salary</span>
+              <input type="number" value={minSalary} onChange={(event) => setMinSalary(Number(event.target.value))} />
+            </label>
+          </div>
+        </div>
+
+        <div className="panel">
+          <div className="panel-head">
+            <div>
+              <h3>Notification channels</h3>
+              <p className="muted">Choose where your matches are delivered.</p>
+            </div>
+          </div>
+
+          <div className="channel-list">
+            <div className="channel-card">
+              <div className="channel-top">
+                <div>
+                  <strong>◉ Website</strong>
+                  <p className="muted">In-app notification centre</p>
+                </div>
+                <input
+                  className="switch"
+                  type="checkbox"
+                  checked={enabled.inapp}
+                  onChange={(event) => setEnabled({ ...enabled, inapp: event.target.checked })}
+                />
+              </div>
+            </div>
+
+            <div className="channel-card">
+              <div className="channel-top">
+                <div>
+                  <strong>✈ Telegram</strong>
+                  <p className="muted">Bot API message with apply link</p>
+                </div>
+                <input
+                  className="switch"
+                  type="checkbox"
+                  checked={enabled.telegram}
+                  onChange={(event) => setEnabled({ ...enabled, telegram: event.target.checked })}
+                />
+              </div>
+              {enabled.telegram ? (
+                <div className="form-grid">
+                  <label>
+                    <span>Chat ID</span>
+                    <input value={telegramTarget} onChange={(event) => setTelegramTarget(event.target.value)} />
+                  </label>
+                  <label>
+                    <span>Bot token</span>
+                    <input type="password" value={botToken} onChange={(event) => setBotToken(event.target.value)} />
+                  </label>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="channel-card">
+              <div className="channel-top">
+                <div>
+                  <strong>✉ Email</strong>
+                  <p className="muted">SMTP with your own credentials</p>
+                </div>
+                <input
+                  className="switch"
+                  type="checkbox"
+                  checked={enabled.email}
+                  onChange={(event) => setEnabled({ ...enabled, email: event.target.checked })}
+                />
+              </div>
+              {enabled.email ? (
+                <div className="form-grid">
+                  <label className="span-two">
+                    <span>Recipient</span>
+                    <input type="email" value={emailTarget} onChange={(event) => setEmailTarget(event.target.value)} />
+                  </label>
+                  <label>
+                    <span>SMTP host</span>
+                    <input value={smtpHost} onChange={(event) => setSmtpHost(event.target.value)} />
+                  </label>
+                  <label>
+                    <span>SMTP port</span>
+                    <input value={smtpPort} onChange={(event) => setSmtpPort(event.target.value)} />
+                  </label>
+                  <label>
+                    <span>Username</span>
+                    <input value={smtpUsername} onChange={(event) => setSmtpUsername(event.target.value)} />
+                  </label>
+                  <label>
+                    <span>Password</span>
+                    <input type="password" value={smtpPassword} onChange={(event) => setSmtpPassword(event.target.value)} />
+                  </label>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="save-bar">
+        {message ? <span className="save-message">{message}</span> : <span />}
+        <button type="button" className="button button-primary" disabled={saving} onClick={() => void save()}>
+          {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </div>
     </section>
   );
 }
