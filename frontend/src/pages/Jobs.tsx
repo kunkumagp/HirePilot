@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import type { Job, Paginated } from '../types';
 
@@ -83,6 +84,7 @@ export function Jobs() {
                     </td>
                     <td>
                       <div className="row-actions">
+                        <Link className="link-button" to={`/jobs/${job.id}`}>Details →</Link>
                         <a className="link-button" href={job.url} target="_blank" rel="noreferrer">
                           Apply ↗
                         </a>

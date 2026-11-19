@@ -26,6 +26,30 @@ export interface Job {
   notified_at: string | null;
 }
 
+export interface JobDetail {
+  id: number;
+  title: string;
+  company: string;
+  url: string;
+  source: string;
+  location: string;
+  salary_min: string | null;
+  salary_max: string | null;
+  salary_currency: string | null;
+  description: string;
+  tags: string[];
+  posted_at: string | null;
+  first_seen_at: string | null;
+  score: number;
+  reasons: string[];
+  status: string;
+  location_uncertain: boolean;
+  salary_unknown: boolean;
+  cover_letter: string | null;
+  notified_at: string | null;
+  created_at: string | null;
+}
+
 export interface ApiNotification {
   id: string;
   type: string;
