@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.4 · Last updated: 2026-11-19
+> **Living document** · Version 2.5 · Last updated: 2026-11-19
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -428,6 +428,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.2 | 2026-11-19 | `jobhunter:run` එක සියලු active users ට ධාවනය වෙන විදිහට වෙනස් කළා (`UserPipelineService` + tenant isolation tests). |
 | 2.3 | 2026-11-19 | Per-user job preferences එකතු කළා — field presets/custom keywords, experience, work arrangement, countries, salary currency සහ ඒ සඳහා API/UI. |
 | 2.4 | 2026-11-19 | සීමිත presets වෙනුවට 18-category / 96-subcategory taxonomy එකක් සහ Settings එකේ dropdown දෙකක් එකතු කළා. |
+| 2.5 | 2026-11-19 | Settings layout එකේ field overlap ගැටලුව හදුවා — Job search focus panel එක full-width කරලා, labels/input වලට අවශ්‍ය ඉඩ දුන්නා. |
 
 ---
 
