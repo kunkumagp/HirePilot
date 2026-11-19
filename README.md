@@ -77,7 +77,7 @@ API එක වෙන URL එකක් නම් `frontend/.env.example` එක `
 
 ### React SPA
 
-`npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), සහ Settings. Settings එකේ එක එක user කෙනෙක්ට තමන්ගේම **job category සහ sub-category** (18 කාණ්ඩයක් / 96 උප-කාණ්ඩයක් — dropdown දෙකකින් තෝරන්න) + custom keywords, **skills**, **experience level / minimum years**, **work arrangement** (Remote/Hybrid/On-site), **preferred countries** සහ **salary currency** දාගන්න පුළුවන්. SMTP සහ bot token වගේ credentials user ගේම ඒවා ලෙස encrypted ලෙස store වෙනවා. Options ලැබෙන්නේ config එකෙන් (`/api/settings/options`) — frontend එකේ hardcode නෑ.
+`npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), සහ Settings. Settings එකේ එක එක user කෙනෙක්ට තමන්ගේම **"Job title / role keywords"** free-text එක (උදා: `React Developer, HubSpot Marketing Manager`) — මේක තමයි වැඩිම ලකුණු දෙන signal එක. ඒකට අමතරව optional **job category සහ sub-category** dropdown දෙකක් (18 කාණ්ඩයක් / 96 උප-කාණ්ඩයක්) සහ custom keywords ද තියෙනවා, **skills**, **experience level / minimum years**, **work arrangement** (Remote/Hybrid/On-site), **preferred countries** සහ **salary currency** දාගන්න පුළුවන්. SMTP සහ bot token වගේ credentials user ගේම ඒවා ලෙස encrypted ලෙස store වෙනවා. Options ලැබෙන්නේ config එකෙන් (`/api/settings/options`) — frontend එකේ hardcode නෑ.
 
 ### එක command එකකින් start / stop
 

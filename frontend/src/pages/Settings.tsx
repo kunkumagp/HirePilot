@@ -14,6 +14,7 @@ export function Settings() {
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [skills, setSkills] = useState('');
   const [field, setField] = useState('web_development');
+  const [jobQuery, setJobQuery] = useState('');
   const [jobCategory, setJobCategory] = useState('');
   const [jobSubcategory, setJobSubcategory] = useState('');
   const [fieldKeywords, setFieldKeywords] = useState('');
@@ -47,6 +48,7 @@ export function Settings() {
       setPortfolioUrl(data.user.portfolio_url ?? '');
       setSkills(data.settings.skills.join(', '));
       setField(data.settings.field ?? 'web_development');
+      setJobQuery(data.settings.job_query ?? '');
       setJobCategory(data.settings.job_category ?? '');
       setJobSubcategory(data.settings.job_subcategory ?? '');
       setFieldKeywords((data.settings.field_keywords ?? []).join(', '));
@@ -85,6 +87,7 @@ export function Settings() {
           portfolio_url: portfolioUrl || null,
           skills: skills.split(',').map((item) => item.trim()).filter(Boolean),
           field,
+          job_query: jobQuery.trim() === '' ? null : jobQuery.trim(),
           job_category: jobCategory || null,
           job_subcategory: jobSubcategory || null,
           field_keywords: fieldKeywords.split(',').map((item) => item.trim()).filter(Boolean),
@@ -198,6 +201,18 @@ export function Settings() {
           </div>
 
           <div className="form-grid">
+            <label className="span-two">
+              <span>Job title / role keywords</span>
+              <input
+                value={jobQuery}
+                onChange={(event) => setJobQuery(event.target.value)}
+                placeholder="React Developer, HubSpot Marketing Manager, Full Stack PHP"
+              />
+              <small className="help-text">
+                Type the exact roles you want, separated by commas. This is the strongest signal —
+                the categories below are optional helpers.
+              </small>
+            </label>
             <label>
               <span>Job category</span>
               <select

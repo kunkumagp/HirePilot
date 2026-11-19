@@ -60,6 +60,7 @@ class SettingsController extends Controller
             'settings' => $settings === null ? [] : [
                 'skills' => $settings->skills,
                 'field' => $settings->field,
+                'job_query' => $settings->job_query,
                 'job_category' => $settings->job_category,
                 'job_subcategory' => $settings->job_subcategory,
                 'field_keywords' => $settings->field_keywords,
@@ -94,6 +95,7 @@ class SettingsController extends Controller
         $user->userSetting?->fill(Arr::only($validated, [
             'skills',
             'field',
+            'job_query',
             'job_category',
             'job_subcategory',
             'field_keywords',

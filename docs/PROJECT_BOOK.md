@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.5 · Last updated: 2026-11-19
+> **Living document** · Version 2.6 · Last updated: 2026-11-19
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -332,6 +332,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Post-release (2026-11-19) — full job taxonomy:** සීමිත 7 presets වෙනුවට සම්පූර්ණ දෙ-මට්ටමේ taxonomy එකක් එකතු වුණා — **18 categories සහ 96 sub-categories** (Engineering, Design, Product, Data, Marketing, Sales, Customer, Operations, Finance, HR, Writing, Education, Healthcare, Legal, Real Estate, IT Support, Manufacturing, Logistics). Taxonomy එක `config/job_taxonomy.php` එකේ තියෙනවා; හැම sub-category එකකටම keyword ලැයිස්තුවක් තියෙනවා. Settings UI එකේ දැන් **Job category** සහ **Job sub-category** කියලා dropdown දෙකක් තියෙනවා — පළමු එක තෝරද්දී දෙවැන්න ඒ අනුව පිරෙනවා. Options ලැබෙන්නේ `/api/settings/options` එකෙන්; frontend එකේ hardcode නෑ. Scoring එකේදී තෝරපු sub-category එකේ keywords (හෝ category keywords) + user ගේ custom keywords එකතු වෙනවා. **PHPUnit: 79 tests, 279 assertions — pass; browser එකෙන් dropdown දෙක සහ sub-category filtering ද තහවුරු කළා.**
 
+**Post-release (2026-11-19) — free-text job query:** සෑම රස්සාවකම designation එක වෙනස් වෙන නිසා fixed taxonomy එක පමණක් ඇති නොවුණා. දැන් Settings එකේ උඩින් **"Job title / role keywords"** කියලා text field එකක් තියෙනවා — user කෙනෙක්ට උදා: `React Developer, HubSpot Marketing Manager, Full Stack PHP` කියලාම ලියන්න පුළුවන්. Scoring එකේදී මුළු phrase එක title/description එකේ තිබුණොත් **+6** (`query_match`), ඒ phrase එකේ වැදගත් වචන තව **+1 බැගින්** (උපරිම 3 — `query_token`; `developer`, `remote` වගේ සාමාන්‍ය වචන stop-word ලෙස ඉවත් කරනවා). Category/Sub-category dropdown දෙක දැන් දෙවැන්නට තියෙන **optional helpers** විතරයි — දෙකෙන්ම keywords එකතු වෙනවා. **PHPUnit: 81 tests, 285 assertions — pass; browser එකෙන් අලුත් field එක සහ layout එකත් පරීක්ෂා කළා.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -429,6 +431,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.3 | 2026-11-19 | Per-user job preferences එකතු කළා — field presets/custom keywords, experience, work arrangement, countries, salary currency සහ ඒ සඳහා API/UI. |
 | 2.4 | 2026-11-19 | සීමිත presets වෙනුවට 18-category / 96-subcategory taxonomy එකක් සහ Settings එකේ dropdown දෙකක් එකතු කළා. |
 | 2.5 | 2026-11-19 | Settings layout එකේ field overlap ගැටලුව හදුවා — Job search focus panel එක full-width කරලා, labels/input වලට අවශ්‍ය ඉඩ දුන්නා. |
+| 2.6 | 2026-11-19 | Free-text job query field එක එකතු කළා — පරිශීලකයාට නිශ්චිත රස්සා designation ටයිප් කරන්න පුළුවන්; dropdown දෙක optional ලෙස ඉතිරි වුණා. |
 
 ---
 

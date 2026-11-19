@@ -71,6 +71,7 @@ return [
 
     'preferences' => [
         'field' => 'web_development',
+        'job_query' => null,
         'job_category' => null,
         'job_subcategory' => null,
         'field_keywords' => [],
@@ -79,6 +80,19 @@ return [
         'work_arrangement' => 'any',
         'preferred_countries' => [],
         'salary_currency' => 'USD',
+    ],
+
+    /*
+    | Free-text job query: the user types the exact roles they want,
+    | e.g. "React Developer, HubSpot Marketing Manager".
+    */
+    'job_query' => [
+        'stop_words' => [
+            'developer', 'engineer', 'remote', 'job', 'role', 'position', 'work',
+            'with', 'and', 'for', 'senior', 'junior', 'team', 'company', 'years',
+            'experience', 'anywhere', 'worldwide', 'looking', 'hiring',
+        ],
+        'max_token_points' => 3,
     ],
 
     'experience_levels' => [
@@ -113,6 +127,8 @@ return [
             'fresh_24h' => 1,
             'location_uncertain' => -2,
             'field_match' => 6,
+            'query_match' => 6,
+            'query_token' => 1,
             'experience_match' => 2,
             'years_match' => 2,
             'arrangement_match' => 2,

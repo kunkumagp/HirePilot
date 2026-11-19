@@ -44,6 +44,56 @@ final class ScoringService
         $text = $job->title.' '.$job->description;
         $locationText = $job->locationText.' '.implode(' ', $job->tags);
 
+        // Free-text query typed by the user (e.g. "React Developer, HubSpot Marketing").
+        $query = trim((string) ($settings?->job_query ?? config('jobhunter.preferences.job_query', '')));
+
+        if ($query !== '') {
+            /** @var list<string> $stopWords */
+            $stopWords = config('jobhunter.job_query.stop_words', []);
+            $tokens = [];
+            $matchedPhrase = null;
+
+            foreach (explode(',', $query) as $rawPhrase) {
+                $phrase = trim($rawPhrase);
+
+                if ($phrase === '') {
+                    continue;
+                }
+
+                if ($matchedPhrase === null && Str::contains($text, $phrase, true)) {
+                    $matchedPhrase = $phrase;
+                }
+
+                foreach (preg_split('/\s+/', Str::lower($phrase)) ?: [] as $word) {
+                    $word = trim($word, '.,-/()');
+
+                    if (strlen($word) < 3 || in_array($word, $stopWords, true)) {
+                        continue;
+                    }
+
+                    $tokens[$word] = true;
+                }
+            }
+
+            if ($matchedPhrase !== null) {
+                $this->award($reasons, $score, $weights, 'query_match', "query phrase: {$matchedPhrase}");
+            }
+
+            $maxTokens = (int) config('jobhunter.job_query.max_token_points', 3);
+            $awarded = 0;
+
+            foreach (array_keys($tokens) as $token) {
+                if ($awarded >= $maxTokens) {
+                    break;
+                }
+
+                if (Str::contains($text, (string) $token, true)) {
+                    $this->award($reasons, $score, $weights, 'query_token', "query token: {$token}");
+                    $awarded++;
+                }
+            }
+        }
+
         // Job role from the two-level taxonomy, with the legacy field as fallback.
         $category = $settings?->job_category ?? config('jobhunter.preferences.job_category');
         $subcategory = $settings?->job_subcategory ?? config('jobhunter.preferences.job_subcategory');
