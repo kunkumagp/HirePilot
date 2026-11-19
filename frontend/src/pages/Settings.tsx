@@ -14,6 +14,8 @@ export function Settings() {
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [skills, setSkills] = useState('');
   const [field, setField] = useState('web_development');
+  const [jobCategory, setJobCategory] = useState('');
+  const [jobSubcategory, setJobSubcategory] = useState('');
   const [fieldKeywords, setFieldKeywords] = useState('');
   const [experienceLevel, setExperienceLevel] = useState('any');
   const [minYears, setMinYears] = useState('');
@@ -45,6 +47,8 @@ export function Settings() {
       setPortfolioUrl(data.user.portfolio_url ?? '');
       setSkills(data.settings.skills.join(', '));
       setField(data.settings.field ?? 'web_development');
+      setJobCategory(data.settings.job_category ?? '');
+      setJobSubcategory(data.settings.job_subcategory ?? '');
       setFieldKeywords((data.settings.field_keywords ?? []).join(', '));
       setExperienceLevel(data.settings.experience_level ?? 'any');
       setMinYears(data.settings.min_years_experience?.toString() ?? '');
@@ -81,6 +85,8 @@ export function Settings() {
           portfolio_url: portfolioUrl || null,
           skills: skills.split(',').map((item) => item.trim()).filter(Boolean),
           field,
+          job_category: jobCategory || null,
+          job_subcategory: jobSubcategory || null,
           field_keywords: fieldKeywords.split(',').map((item) => item.trim()).filter(Boolean),
           experience_level: experienceLevel,
           min_years_experience: minYears === '' ? null : Number(minYears),
@@ -193,9 +199,29 @@ export function Settings() {
 
           <div className="form-grid">
             <label>
-              <span>Field / role family</span>
-              <select value={field} onChange={(event) => setField(event.target.value)}>
-                {options?.fields.map((item) => (
+              <span>Job category</span>
+              <select
+                value={jobCategory}
+                onChange={(event) => {
+                  setJobCategory(event.target.value);
+                  setJobSubcategory('');
+                }}
+              >
+                <option value="">All categories</option>
+                {options?.job_categories.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Job sub-category</span>
+              <select
+                value={jobSubcategory}
+                disabled={jobCategory === ''}
+                onChange={(event) => setJobSubcategory(event.target.value)}
+              >
+                <option value="">All sub-categories</option>
+                {(options?.job_categories.find((item) => item.key === jobCategory)?.subcategories ?? []).map((item) => (
                   <option key={item.key} value={item.key}>{item.label}</option>
                 ))}
               </select>

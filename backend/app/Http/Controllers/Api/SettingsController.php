@@ -32,6 +32,20 @@ class SettingsController extends Controller
                 ->all(),
             'experience_levels' => array_keys(config('jobhunter.experience_levels', [])),
             'arrangements' => array_keys(config('jobhunter.arrangements', [])),
+            'job_categories' => collect(config('job_taxonomy.categories', []))
+                ->map(fn (array $category, string $key): array => [
+                    'key' => $key,
+                    'label' => $category['label'],
+                    'subcategories' => collect($category['subcategories'])
+                        ->map(fn (array $subcategory, string $subKey): array => [
+                            'key' => $subKey,
+                            'label' => $subcategory['label'],
+                        ])
+                        ->values()
+                        ->all(),
+                ])
+                ->values()
+                ->all(),
         ]);
     }
 
@@ -46,6 +60,8 @@ class SettingsController extends Controller
             'settings' => $settings === null ? [] : [
                 'skills' => $settings->skills,
                 'field' => $settings->field,
+                'job_category' => $settings->job_category,
+                'job_subcategory' => $settings->job_subcategory,
                 'field_keywords' => $settings->field_keywords,
                 'experience_level' => $settings->experience_level,
                 'min_years_experience' => $settings->min_years_experience,
@@ -78,6 +94,8 @@ class SettingsController extends Controller
         $user->userSetting?->fill(Arr::only($validated, [
             'skills',
             'field',
+            'job_category',
+            'job_subcategory',
             'field_keywords',
             'experience_level',
             'min_years_experience',

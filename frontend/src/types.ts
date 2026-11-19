@@ -42,6 +42,8 @@ export interface ApiNotification {
 export interface UserSettings {
   skills: string[];
   field: string;
+  job_category: string | null;
+  job_subcategory: string | null;
   field_keywords: string[];
   experience_level: 'any' | 'junior' | 'mid' | 'senior' | 'lead';
   min_years_experience: number | null;
@@ -60,8 +62,15 @@ export interface UserSettings {
   max_notifications_per_run: number;
 }
 
+export interface JobCategoryOption {
+  key: string;
+  label: string;
+  subcategories: Array<{ key: string; label: string }>;
+}
+
 export interface SettingsOptions {
   fields: Array<{ key: string; label: string }>;
+  job_categories: JobCategoryOption[];
   experience_levels: string[];
   arrangements: string[];
 }

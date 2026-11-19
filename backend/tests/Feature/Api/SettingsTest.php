@@ -24,6 +24,7 @@ class SettingsTest extends TestCase
                 'fields' => [['key', 'label']],
                 'experience_levels',
                 'arrangements',
+                'job_categories' => [['key', 'label', 'subcategories']],
             ])
             ->assertJsonFragment(['key' => 'web_development', 'label' => 'Web Development']);
     }
@@ -73,6 +74,8 @@ class SettingsTest extends TestCase
         $this->withToken($user->createToken('spa')->plainTextToken)
             ->putJson('/api/settings', [
                 'field' => 'sales',
+                'job_category' => 'sales',
+                'job_subcategory' => 'account_executive',
                 'field_keywords' => ['hubspot', 'pipeline'],
                 'experience_level' => 'senior',
                 'min_years_experience' => 5,
@@ -84,6 +87,8 @@ class SettingsTest extends TestCase
 
         $settings = $user->userSetting->fresh();
         $this->assertSame('sales', $settings->field);
+        $this->assertSame('sales', $settings->job_category);
+        $this->assertSame('account_executive', $settings->job_subcategory);
         $this->assertSame(['hubspot', 'pipeline'], $settings->field_keywords);
         $this->assertSame('senior', $settings->experience_level);
         $this->assertSame(5, $settings->min_years_experience);

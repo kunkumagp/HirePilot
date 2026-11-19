@@ -23,6 +23,8 @@ class UpdateSettingsRequest extends FormRequest
             'portfolio_url' => ['sometimes', 'nullable', 'url', 'max:255'],
             'skills' => ['sometimes', 'array'],
             'field' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'job_category' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'job_subcategory' => ['sometimes', 'nullable', 'string', 'max:64'],
             'field_keywords' => ['sometimes', 'array'],
             'experience_level' => ['sometimes', 'string', 'in:any,junior,mid,senior,lead'],
             'min_years_experience' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:50'],
