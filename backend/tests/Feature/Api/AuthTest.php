@@ -63,6 +63,13 @@ class AuthTest extends TestCase
         $this->getJson('/api/jobs')->assertUnauthorized();
     }
 
+    public function test_protected_endpoint_without_json_header_still_returns_json_401(): void
+    {
+        $this->get('/api/jobs')
+            ->assertStatus(401)
+            ->assertJson(['message' => 'Unauthenticated.']);
+    }
+
     public function test_logout_revokes_the_current_token(): void
     {
         $user = User::factory()->create();
