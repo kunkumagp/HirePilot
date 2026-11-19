@@ -645,6 +645,109 @@ input {
   font-size: 0.85rem;
 }
 
+/* ---------- Job details ---------- */
+.detail-panel {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.detail-header h2 {
+  margin: 0.2rem 0 0;
+  font-size: 1.4rem;
+}
+
+.detail-score {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.detail-section {
+  border-top: 1px solid var(--border);
+  padding-top: 1.2rem;
+}
+
+.detail-section h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.section-head h3 {
+  margin: 0;
+}
+
+.job-description,
+.cover-letter {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-chip {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.reasons-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.reasons-list li {
+  margin-bottom: 0.25rem;
+}
+
 /* ---------- Settings ---------- */
 .settings-grid {
   display: grid;

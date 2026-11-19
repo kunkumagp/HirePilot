@@ -15,6 +15,8 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', [AuthController::class, 'me']);
 
     Route::get('/jobs', [JobController::class, 'index']);
+    Route::get('/jobs/{job}', [JobController::class, 'show']);
+    Route::post('/jobs/{job}/cover-letter', [JobController::class, 'regenerateCoverLetter']);
 
     Route::get('/settings/options', [SettingsController::class, 'options']);
     Route::get('/settings', [SettingsController::class, 'show']);
