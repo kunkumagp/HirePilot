@@ -73,6 +73,8 @@ npm run build    # production build
 
 API එක වෙන URL එකක් නම් `frontend/.env.example` එක `frontend/.env` එකට copy කරලා `VITE_API_BASE_URL` වෙනස් කරන්න.
 
+**Theme:** dark එක තමයි default එක. Topbar එකේ (හෝ login/register පිටුවේ) ☀ / ☾ button එකෙන් light/dark අතර මාරු වෙන්න පුළුවන් — තේරීම `localStorage` එකේ save වෙනවා.
+
 ### React SPA
 
 `npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), සහ Settings (skills/filters/notification channels — SMTP සහ bot token එක user ගේම credentials ලෙස encrypted ලෙස store වෙනවා).
