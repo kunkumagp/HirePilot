@@ -22,6 +22,8 @@ final class UserSettingsService
             [
                 'skills' => $profile['skills'],
                 'field' => $preferences['field'],
+                'job_category' => $preferences['job_category'],
+                'job_subcategory' => $preferences['job_subcategory'],
                 'field_keywords' => $preferences['field_keywords'],
                 'experience_level' => $preferences['experience_level'],
                 'min_years_experience' => $preferences['min_years_experience'],

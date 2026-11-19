@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.3 · Last updated: 2026-11-19
+> **Living document** · Version 2.4 · Last updated: 2026-11-19
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -330,6 +330,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Post-release (2026-11-19) — per-user job preferences:** එක එක user ගේ රස්සා සෙවුම වෙනස් වෙන නිසා `user_settings` එක පුළුල් කළා — **field/role family** (config එකේ presets + එක user ගේම custom keywords), **experience level** (junior→lead + minimum years), **work arrangement** (remote/hybrid/onsite), **preferred countries/regions** සහ **salary currency**. Hard filters තියෙන්නේ location restrictions, blacklist සහ salary විතරයි; field/skills/experience/arrangement/country දැන් **scoring signals** නිසා ටිකක් අඩු ගැළපීමක් තියෙන ජොබුත් පෙනෙනවා, හැබැයි ලකුණු අඩුවෙන්. Field එකම ගැළපුණු ජොබ් එකක් දැනුම් ලැබීමට ඇති තරම් වෙන්න `field_match = 6`, `min_score = 6` ලෙස සකස් කළා. Preset ලැයිස්තුව frontend එකට දෙන්නේ `GET /api/settings/options` එකෙන් — UI එකේ hardcode නෑ. **PHPUnit: 78 tests, 270 assertions — pass; frontend build සහ browser check ද සාර්ථකයි.**
 
+**Post-release (2026-11-19) — full job taxonomy:** සීමිත 7 presets වෙනුවට සම්පූර්ණ දෙ-මට්ටමේ taxonomy එකක් එකතු වුණා — **18 categories සහ 96 sub-categories** (Engineering, Design, Product, Data, Marketing, Sales, Customer, Operations, Finance, HR, Writing, Education, Healthcare, Legal, Real Estate, IT Support, Manufacturing, Logistics). Taxonomy එක `config/job_taxonomy.php` එකේ තියෙනවා; හැම sub-category එකකටම keyword ලැයිස්තුවක් තියෙනවා. Settings UI එකේ දැන් **Job category** සහ **Job sub-category** කියලා dropdown දෙකක් තියෙනවා — පළමු එක තෝරද්දී දෙවැන්න ඒ අනුව පිරෙනවා. Options ලැබෙන්නේ `/api/settings/options` එකෙන්; frontend එකේ hardcode නෑ. Scoring එකේදී තෝරපු sub-category එකේ keywords (හෝ category keywords) + user ගේ custom keywords එකතු වෙනවා. **PHPUnit: 79 tests, 279 assertions — pass; browser එකෙන් dropdown දෙක සහ sub-category filtering ද තහවුරු කළා.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -425,6 +427,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.1 | 2026-11-18 | Milestone 8 සම්පූර්ණ වුණා — plan limits, queued notifications, scheduler සහ SaaS deployment guide; සියලු milestones සම්පූර්ණයි. |
 | 2.2 | 2026-11-19 | `jobhunter:run` එක සියලු active users ට ධාවනය වෙන විදිහට වෙනස් කළා (`UserPipelineService` + tenant isolation tests). |
 | 2.3 | 2026-11-19 | Per-user job preferences එකතු කළා — field presets/custom keywords, experience, work arrangement, countries, salary currency සහ ඒ සඳහා API/UI. |
+| 2.4 | 2026-11-19 | සීමිත presets වෙනුවට 18-category / 96-subcategory taxonomy එකක් සහ Settings එකේ dropdown දෙකක් එකතු කළා. |
 
 ---
 

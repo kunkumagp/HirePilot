@@ -71,6 +71,8 @@ return [
 
     'preferences' => [
         'field' => 'web_development',
+        'job_category' => null,
+        'job_subcategory' => null,
         'field_keywords' => [],
         'experience_level' => 'any',
         'min_years_experience' => null,

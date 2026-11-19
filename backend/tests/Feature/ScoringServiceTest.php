@@ -149,6 +149,28 @@ class ScoringServiceTest extends TestCase
         $this->assertContains('field: sales (+6)', $customJob->reasons);
     }
 
+    public function test_taxonomy_subcategory_keywords_score_a_specific_role(): void
+    {
+        $settings = UserSetting::factory()->make([
+            'skills' => [],
+            'field' => 'web_development',
+            'job_category' => 'engineering',
+            'job_subcategory' => 'frontend',
+            'weights' => config('jobhunter.scoring.weights'),
+        ]);
+
+        $result = app(ScoringService::class)->score(
+            $this->makeJob([
+                'title' => 'React Developer',
+                'description' => 'Build interfaces with TypeScript and Vue.',
+            ]),
+            $settings,
+        );
+
+        $this->assertSame(6, $result->score);
+        $this->assertContains('field: Frontend Development (+6)', $result->reasons);
+    }
+
     public function test_experience_arrangement_and_country_preferences_add_points(): void
     {
         $settings = UserSetting::factory()->make([

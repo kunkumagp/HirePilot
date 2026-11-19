@@ -19,6 +19,8 @@ class UserSetting extends Model
         'user_id',
         'skills',
         'field',
+        'job_category',
+        'job_subcategory',
         'field_keywords',
         'experience_level',
         'min_years_experience',

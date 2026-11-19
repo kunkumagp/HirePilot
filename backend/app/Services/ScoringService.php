@@ -44,18 +44,34 @@ final class ScoringService
         $text = $job->title.' '.$job->description;
         $locationText = $job->locationText.' '.implode(' ', $job->tags);
 
-        // Field / role family: preset keywords plus the user's own keywords.
+        // Job role from the two-level taxonomy, with the legacy field as fallback.
+        $category = $settings?->job_category ?? config('jobhunter.preferences.job_category');
+        $subcategory = $settings?->job_subcategory ?? config('jobhunter.preferences.job_subcategory');
         $field = (string) ($settings?->field ?? config('jobhunter.preferences.field', 'web_development'));
 
         /** @var list<string> $fieldKeywords */
         $fieldKeywords = $settings?->field_keywords ?? config('jobhunter.preferences.field_keywords', []);
 
         /** @var list<string> $presetKeywords */
-        $presetKeywords = config("jobhunter.fields.{$field}", []);
+        $presetKeywords = [];
+
+        if ($category !== null && $category !== '') {
+            $presetKeywords = $subcategory !== null && $subcategory !== ''
+                ? (array) config("job_taxonomy.categories.{$category}.subcategories.{$subcategory}.keywords", [])
+                : (array) config("job_taxonomy.categories.{$category}.keywords", []);
+        } else {
+            $presetKeywords = (array) config("jobhunter.fields.{$field}", []);
+        }
+
         $allFieldKeywords = array_values(array_unique([...$presetKeywords, ...$fieldKeywords]));
+        $fieldLabel = $subcategory !== null && $subcategory !== ''
+            ? (string) config("job_taxonomy.categories.{$category}.subcategories.{$subcategory}.label", $subcategory)
+            : ($category !== null && $category !== ''
+                ? (string) config("job_taxonomy.categories.{$category}.label", $category)
+                : $field);
 
         if ($this->containsAny($text, $allFieldKeywords)) {
-            $this->award($reasons, $score, $weights, 'field_match', "field: {$field}");
+            $this->award($reasons, $score, $weights, 'field_match', "field: {$fieldLabel}");
         }
 
         // Experience level from title/description keywords.
