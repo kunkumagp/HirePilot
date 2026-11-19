@@ -77,6 +77,20 @@ API එක වෙන URL එකක් නම් `frontend/.env.example` එක `
 
 `npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), සහ Settings (skills/filters/notification channels — SMTP සහ bot token එක user ගේම credentials ලෙස encrypted ලෙස store වෙනවා).
 
+### එක command එකකින් start / stop
+
+Repo root එකේ ඉඳන් (PowerShell හෝ File Explorer එකෙන් double-click):
+
+```powershell
+.\start.cmd          # backend + frontend දෙකම පටන් ගන්න
+.\stop.cmd           # දෙකම නවත්වන්න
+.\dev.cmd status     # තත්ත්වය බලන්න
+```
+
+`start.cmd` එකෙන් backend එක `http://127.0.0.1:8000` වලත්, frontend එක `http://localhost:5173` වලත් ධාවනය වෙනවා. PID ටික `.runtime/` එකේ තියෙනවා (git-ignored). **PowerShell execution policy වෙනස් කරන්න ඕනේ නෑ** — `.cmd` wrapper එක ඒක bypass කරනවා.
+
+අතින්ම ධාවනය කරන්න ඕනේ නම් පහළ commands ටිකත් පාවිච්චි කරන්න පුළුවන් (උඩ තියෙනවා).
+
 ### Dry run (කිසිම notification එකක් යවන්නේ නෑ, DB එකට ලියන්නෙත් නෑ)
 
 ```sh
