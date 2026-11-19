@@ -62,20 +62,36 @@ class UserPipelineServiceTest extends TestCase
         ];
     }
 
+    /**
+     * @param  array{matches: array}  $result
+     */
+    private function scoreFor(array $result, string $title): int
+    {
+        foreach ($result['matches'] as $match) {
+            if ($match['job']->title === $title) {
+                return $match['score']->score;
+            }
+        }
+
+        return -1;
+    }
+
     public function test_each_user_gets_only_jobs_matching_their_own_rules(): void
     {
         $reactUser = User::factory()->create();
         app(UserSettingsService::class)->createDefaults($reactUser);
         $reactUser->userSetting->update([
             'skills' => ['react'],
-            'title_include' => ['react'],
+            'field' => 'design',
+            'field_keywords' => ['react'],
         ]);
 
         $laravelUser = User::factory()->create();
         app(UserSettingsService::class)->createDefaults($laravelUser);
         $laravelUser->userSetting->update([
             'skills' => ['laravel'],
-            'title_include' => ['laravel'],
+            'field' => 'sales',
+            'field_keywords' => ['laravel'],
         ]);
 
         $jobs = $this->jobs();
@@ -84,11 +100,15 @@ class UserPipelineServiceTest extends TestCase
         $reactResult = $service->run($reactUser, $jobs, true);
         $laravelResult = $service->run($laravelUser, $jobs, true);
 
-        $this->assertCount(1, $reactResult['matches']);
-        $this->assertSame('React Developer', $reactResult['matches'][0]['job']->title);
-
-        $this->assertCount(1, $laravelResult['matches']);
-        $this->assertSame('Laravel Developer', $laravelResult['matches'][0]['job']->title);
+        // Both jobs pass the hard filters; each user's own rules decide the ranking.
+        $this->assertGreaterThan(
+            $this->scoreFor($reactResult, 'Laravel Developer'),
+            $this->scoreFor($reactResult, 'React Developer'),
+        );
+        $this->assertGreaterThan(
+            $this->scoreFor($laravelResult, 'React Developer'),
+            $this->scoreFor($laravelResult, 'Laravel Developer'),
+        );
 
         $this->assertSame(1, UserJob::where('user_id', $reactUser->id)->count());
         $this->assertSame(1, UserJob::where('user_id', $laravelUser->id)->count());

@@ -41,6 +41,13 @@ export interface ApiNotification {
 
 export interface UserSettings {
   skills: string[];
+  field: string;
+  field_keywords: string[];
+  experience_level: 'any' | 'junior' | 'mid' | 'senior' | 'lead';
+  min_years_experience: number | null;
+  work_arrangement: 'any' | 'remote' | 'hybrid' | 'onsite';
+  preferred_countries: string[];
+  salary_currency: string;
   title_include: string[];
   exclude_words: string[];
   location_accept: string[];
@@ -51,6 +58,12 @@ export interface UserSettings {
   min_score: number;
   weights: Record<string, number>;
   max_notifications_per_run: number;
+}
+
+export interface SettingsOptions {
+  fields: Array<{ key: string; label: string }>;
+  experience_levels: string[];
+  arrangements: string[];
 }
 
 export interface Channel {

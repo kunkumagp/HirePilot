@@ -45,7 +45,7 @@ class JobHunterRunCommandTest extends TestCase
         $this->artisan('jobhunter:run', ['--dry-run' => true])
             ->expectsOutputToContain('DRY RUN (no notifications will be sent)')
             ->expectsOutputToContain('Fetched: 2')
-            ->expectsOutputToContain('After filters: 1')
+            ->expectsOutputToContain('After filters: 2')
             ->expectsOutputToContain('React Developer @ Acme Remote')
             ->expectsOutputToContain('Notified: 0')
             ->assertSuccessful();

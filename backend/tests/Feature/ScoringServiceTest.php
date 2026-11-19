@@ -73,7 +73,7 @@ class ScoringServiceTest extends TestCase
         $this->assertSame(5, $result->score);
         $this->assertSame([
             'worldwide (+2)',
-            'USD salary above target (+2)',
+            'listed salary above target (+2)',
             'posted in last 24h (+1)',
         ], $result->reasons);
     }
@@ -110,6 +110,7 @@ class ScoringServiceTest extends TestCase
     {
         $settings = UserSetting::factory()->make([
             'skills' => [''],
+            'field' => 'sales',
             'weights' => config('jobhunter.scoring.weights'),
         ]);
 
@@ -120,5 +121,59 @@ class ScoringServiceTest extends TestCase
 
         $this->assertSame(0, $result->score);
         $this->assertSame([], $result->reasons);
+    }
+
+    public function test_field_preset_and_custom_keywords_score_a_different_role_family(): void
+    {
+        $settings = UserSetting::factory()->make([
+            'skills' => [],
+            'field' => 'sales',
+            'field_keywords' => ['laravel'],
+            'weights' => config('jobhunter.scoring.weights'),
+        ]);
+
+        $salesJob = app(ScoringService::class)->score(
+            $this->makeJob([
+                'title' => 'Enterprise Account Executive',
+                'description' => 'Own the sales cycle with HubSpot.',
+            ]),
+            $settings,
+        );
+        $customJob = app(ScoringService::class)->score(
+            $this->makeJob(['title' => 'Laravel Developer']),
+            $settings,
+        );
+
+        $this->assertSame(6, $salesJob->score);
+        $this->assertContains('field: sales (+6)', $salesJob->reasons);
+        $this->assertContains('field: sales (+6)', $customJob->reasons);
+    }
+
+    public function test_experience_arrangement_and_country_preferences_add_points(): void
+    {
+        $settings = UserSetting::factory()->make([
+            'skills' => [],
+            'field' => 'web_development',
+            'experience_level' => 'senior',
+            'min_years_experience' => 3,
+            'work_arrangement' => 'remote',
+            'preferred_countries' => ['Germany'],
+            'weights' => config('jobhunter.scoring.weights'),
+        ]);
+
+        $result = app(ScoringService::class)->score(
+            $this->makeJob([
+                'title' => 'Senior React Developer',
+                'description' => '5+ years experience. Remote role, work from anywhere.',
+                'locationText' => 'Germany',
+            ]),
+            $settings,
+        );
+
+        $this->assertSame(14, $result->score);
+        $this->assertContains('experience level: senior (+2)', $result->reasons);
+        $this->assertContains('experience >= 3 years (+2)', $result->reasons);
+        $this->assertContains('arrangement: remote (+2)', $result->reasons);
+        $this->assertContains('preferred country/region (+2)', $result->reasons);
     }
 }

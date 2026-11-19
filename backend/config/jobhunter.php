@@ -51,12 +51,58 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Per-user job preferences
+    |--------------------------------------------------------------------------
+    |
+    | Field presets keep the UI simple while custom keywords let any user
+    | search a niche role. Experience and arrangement are matched from job text.
+    |
+    */
+
+    'fields' => [
+        'web_development' => ['web', 'frontend', 'backend', 'full stack', 'fullstack', 'react', 'node', 'laravel', 'php', 'javascript', 'typescript'],
+        'sales' => ['sales', 'account executive', 'business development', 'bdr', 'sdr', 'account manager'],
+        'marketing' => ['marketing', 'growth', 'seo', 'content', 'demand generation', 'email marketing', 'hubspot'],
+        'design' => ['design', 'ui', 'ux', 'figma', 'graphic', 'product designer'],
+        'data' => ['data', 'analytics', 'bi', 'sql', 'python', 'machine learning'],
+        'support' => ['support', 'customer success', 'help desk', 'customer support'],
+        'devops' => ['devops', 'cloud', 'infrastructure', 'kubernetes', 'aws'],
+    ],
+
+    'preferences' => [
+        'field' => 'web_development',
+        'field_keywords' => [],
+        'experience_level' => 'any',
+        'min_years_experience' => null,
+        'work_arrangement' => 'any',
+        'preferred_countries' => [],
+        'salary_currency' => 'USD',
+    ],
+
+    'experience_levels' => [
+        'any' => [],
+        'junior' => ['junior', 'entry level', 'graduate', 'associate'],
+        'mid' => ['mid level', 'intermediate', '2+ years', '3+ years'],
+        'senior' => ['senior', 'sr.', 'staff', '5+ years'],
+        'lead' => ['lead', 'principal', 'head of', 'director'],
+    ],
+
+    'arrangements' => [
+        'any' => [],
+        'remote' => ['remote', 'anywhere', 'worldwide', 'distributed'],
+        'hybrid' => ['hybrid', 'partially remote'],
+        'onsite' => ['onsite', 'on-site', 'in-office', 'office based'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Scoring
     |--------------------------------------------------------------------------
     */
 
     'scoring' => [
-        'min_score' => 5,
+        // A field match alone (6) is enough; generic bonuses max out at 5.
+        'min_score' => 6,
         'weights' => [
             'title_skill' => 3,
             'desc_skill' => 1,
@@ -64,6 +110,11 @@ return [
             'usd_salary' => 2,
             'fresh_24h' => 1,
             'location_uncertain' => -2,
+            'field_match' => 6,
+            'experience_match' => 2,
+            'years_match' => 2,
+            'arrangement_match' => 2,
+            'country_match' => 2,
         ],
     ],
 

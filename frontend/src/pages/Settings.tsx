@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client';
-import type { Channel, User, UserSettings } from '../types';
+import type { Channel, SettingsOptions, User, UserSettings } from '../types';
 
 interface SettingsResponse {
   user: User;
@@ -13,7 +13,15 @@ export function Settings() {
   const [name, setName] = useState('');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [skills, setSkills] = useState('');
-  const [minScore, setMinScore] = useState(5);
+  const [field, setField] = useState('web_development');
+  const [fieldKeywords, setFieldKeywords] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('any');
+  const [minYears, setMinYears] = useState('');
+  const [workArrangement, setWorkArrangement] = useState('any');
+  const [preferredCountries, setPreferredCountries] = useState('');
+  const [salaryCurrency, setSalaryCurrency] = useState('USD');
+  const [options, setOptions] = useState<SettingsOptions | null>(null);
+  const [minScore, setMinScore] = useState(6);
   const [maxAgeDays, setMaxAgeDays] = useState(14);
   const [minSalary, setMinSalary] = useState(24000);
   const [enabled, setEnabled] = useState({ telegram: false, email: false, inapp: false });
@@ -29,10 +37,21 @@ export function Settings() {
 
   useEffect(() => {
     void (async () => {
-      const data = await api<SettingsResponse>('/settings');
+      const [data, preferenceOptions] = await Promise.all([
+        api<SettingsResponse>('/settings'),
+        api<SettingsOptions>('/settings/options'),
+      ]);
       setName(data.user.name);
       setPortfolioUrl(data.user.portfolio_url ?? '');
       setSkills(data.settings.skills.join(', '));
+      setField(data.settings.field ?? 'web_development');
+      setFieldKeywords((data.settings.field_keywords ?? []).join(', '));
+      setExperienceLevel(data.settings.experience_level ?? 'any');
+      setMinYears(data.settings.min_years_experience?.toString() ?? '');
+      setWorkArrangement(data.settings.work_arrangement ?? 'any');
+      setPreferredCountries((data.settings.preferred_countries ?? []).join(', '));
+      setSalaryCurrency(data.settings.salary_currency ?? 'USD');
+      setOptions(preferenceOptions);
       setMinScore(data.settings.min_score);
       setMaxAgeDays(data.settings.max_age_days);
       setMinSalary(data.settings.min_salary_usd_yearly);
@@ -61,6 +80,13 @@ export function Settings() {
           name,
           portfolio_url: portfolioUrl || null,
           skills: skills.split(',').map((item) => item.trim()).filter(Boolean),
+          field,
+          field_keywords: fieldKeywords.split(',').map((item) => item.trim()).filter(Boolean),
+          experience_level: experienceLevel,
+          min_years_experience: minYears === '' ? null : Number(minYears),
+          work_arrangement: workArrangement,
+          preferred_countries: preferredCountries.split(',').map((item) => item.trim()).filter(Boolean),
+          salary_currency: salaryCurrency.toUpperCase().slice(0, 3),
           min_score: Number(minScore),
           max_age_days: Number(maxAgeDays),
           min_salary_usd_yearly: Number(minSalary),
@@ -153,6 +179,76 @@ export function Settings() {
             <label className="span-two">
               <span>Minimum yearly USD salary</span>
               <input type="number" value={minSalary} onChange={(event) => setMinSalary(Number(event.target.value))} />
+            </label>
+          </div>
+        </div>
+
+        <div className="panel">
+          <div className="panel-head">
+            <div>
+              <h3>Job search focus</h3>
+              <p className="muted">Tell HirePilot exactly what you are looking for.</p>
+            </div>
+          </div>
+
+          <div className="form-grid">
+            <label>
+              <span>Field / role family</span>
+              <select value={field} onChange={(event) => setField(event.target.value)}>
+                {options?.fields.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Extra field keywords</span>
+              <input
+                value={fieldKeywords}
+                onChange={(event) => setFieldKeywords(event.target.value)}
+                placeholder="hubspot, saas, ..."
+              />
+              <small className="help-text">Added to the selected field's keywords.</small>
+            </label>
+            <label>
+              <span>Experience level</span>
+              <select value={experienceLevel} onChange={(event) => setExperienceLevel(event.target.value)}>
+                {(options?.experience_levels ?? ['any']).map((item) => (
+                  <option key={item} value={item}>{item.charAt(0).toUpperCase() + item.slice(1)}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Minimum years of experience</span>
+              <input
+                type="number"
+                value={minYears}
+                onChange={(event) => setMinYears(event.target.value)}
+                placeholder="e.g. 3"
+              />
+            </label>
+            <label>
+              <span>Work arrangement</span>
+              <select value={workArrangement} onChange={(event) => setWorkArrangement(event.target.value)}>
+                {(options?.arrangements ?? ['any']).map((item) => (
+                  <option key={item} value={item}>{item.charAt(0).toUpperCase() + item.slice(1)}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Preferred countries / regions</span>
+              <input
+                value={preferredCountries}
+                onChange={(event) => setPreferredCountries(event.target.value)}
+                placeholder="Asia, Sri Lanka"
+              />
+            </label>
+            <label className="span-two">
+              <span>Salary currency</span>
+              <input
+                value={salaryCurrency}
+                onChange={(event) => setSalaryCurrency(event.target.value)}
+                maxLength={3}
+              />
             </label>
           </div>
         </div>
