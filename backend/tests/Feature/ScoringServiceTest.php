@@ -149,6 +149,46 @@ class ScoringServiceTest extends TestCase
         $this->assertContains('field: sales (+6)', $customJob->reasons);
     }
 
+    public function test_free_text_job_query_scores_phrase_and_tokens(): void
+    {
+        $settings = UserSetting::factory()->make([
+            'skills' => [],
+            'field' => 'sales',
+            'job_query' => 'React Developer, HubSpot Marketing',
+            'weights' => config('jobhunter.scoring.weights'),
+        ]);
+
+        $result = app(ScoringService::class)->score(
+            $this->makeJob(['title' => 'React Developer']),
+            $settings,
+        );
+
+        $this->assertSame(7, $result->score);
+        $this->assertContains('query phrase: React Developer (+6)', $result->reasons);
+        $this->assertContains('query token: react (+1)', $result->reasons);
+    }
+
+    public function test_free_text_query_caps_token_points(): void
+    {
+        $settings = UserSetting::factory()->make([
+            'skills' => [],
+            'field' => 'sales',
+            'job_query' => 'HubSpot Marketing Manager',
+            'weights' => config('jobhunter.scoring.weights'),
+        ]);
+
+        $result = app(ScoringService::class)->score(
+            $this->makeJob([
+                'title' => 'Senior HubSpot Marketing Manager',
+                'description' => 'Own campaigns and pipeline.',
+            ]),
+            $settings,
+        );
+
+        $this->assertSame(9, $result->score);
+        $this->assertContains('query phrase: HubSpot Marketing Manager (+6)', $result->reasons);
+    }
+
     public function test_taxonomy_subcategory_keywords_score_a_specific_role(): void
     {
         $settings = UserSetting::factory()->make([

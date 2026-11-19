@@ -42,6 +42,7 @@ export interface ApiNotification {
 export interface UserSettings {
   skills: string[];
   field: string;
+  job_query: string | null;
   job_category: string | null;
   job_subcategory: string | null;
   field_keywords: string[];

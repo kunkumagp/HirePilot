@@ -22,6 +22,7 @@ final class UserSettingsService
             [
                 'skills' => $profile['skills'],
                 'field' => $preferences['field'],
+                'job_query' => $preferences['job_query'],
                 'job_category' => $preferences['job_category'],
                 'job_subcategory' => $preferences['job_subcategory'],
                 'field_keywords' => $preferences['field_keywords'],

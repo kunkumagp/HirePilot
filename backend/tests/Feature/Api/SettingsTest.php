@@ -74,6 +74,7 @@ class SettingsTest extends TestCase
         $this->withToken($user->createToken('spa')->plainTextToken)
             ->putJson('/api/settings', [
                 'field' => 'sales',
+                'job_query' => 'React Developer, HubSpot Marketing Manager',
                 'job_category' => 'sales',
                 'job_subcategory' => 'account_executive',
                 'field_keywords' => ['hubspot', 'pipeline'],
@@ -87,6 +88,7 @@ class SettingsTest extends TestCase
 
         $settings = $user->userSetting->fresh();
         $this->assertSame('sales', $settings->field);
+        $this->assertSame('React Developer, HubSpot Marketing Manager', $settings->job_query);
         $this->assertSame('sales', $settings->job_category);
         $this->assertSame('account_executive', $settings->job_subcategory);
         $this->assertSame(['hubspot', 'pipeline'], $settings->field_keywords);
