@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import type { ApiNotification, Paginated } from '../types';
 
 const pageTitles: Record<string, string> = {
@@ -20,6 +21,7 @@ const navigation = [
 
 export function Layout() {
   const { user, logout } = useAuth();
+  const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [unread, setUnread] = useState(0);
@@ -73,6 +75,15 @@ export function Layout() {
             <h1 className="page-title">{pageTitles[location.pathname] ?? 'HirePilot'}</h1>
           </div>
           <div className="topbar-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggle}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              {theme === 'dark' ? '☀' : '☾'}
+            </button>
             <NavLink to="/notifications" className="bell" aria-label="Notifications">
               ◉
               {unread > 0 ? <span className="bell-badge">{unread}</span> : null}

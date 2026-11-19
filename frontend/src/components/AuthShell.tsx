@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 interface AuthShellProps {
   title: string;
@@ -8,6 +9,8 @@ interface AuthShellProps {
 }
 
 export function AuthShell({ title, subtitle, children, footer }: AuthShellProps) {
+  const { theme, toggle } = useTheme();
+
   return (
     <div className="auth-shell">
       <aside className="auth-brand">
@@ -28,6 +31,15 @@ export function AuthShell({ title, subtitle, children, footer }: AuthShellProps)
       </aside>
 
       <main className="auth-panel">
+        <button
+          type="button"
+          className="theme-toggle auth-theme-toggle"
+          onClick={toggle}
+          title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        >
+          {theme === 'dark' ? '☀' : '☾'}
+        </button>
         <div className="auth-card">
           <h2>{title}</h2>
           <p className="muted">{subtitle}</p>
