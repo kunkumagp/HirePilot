@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { AuthShell } from '../components/AuthShell';
 import { useAuth } from '../context/AuthContext';
 
 export function Register() {
@@ -28,45 +29,49 @@ export function Register() {
   };
 
   return (
-    <section className="auth-card">
-      <h1>Create account</h1>
-      <form onSubmit={(event) => void submit(event)}>
+    <AuthShell
+      title="Create your account"
+      subtitle="Start getting matched jobs in a couple of minutes."
+      footer={
+        <>
+          Already registered? <Link to="/login">Sign in</Link>
+        </>
+      }
+    >
+      <form className="auth-form" onSubmit={(event) => void submit(event)}>
         <label>
-          Name
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <span>Full name</span>
+          <input value={name} onChange={(event) => setName(event.target.value)} required />
         </label>
         <label>
-          Email
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <span>Email address</span>
+          <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
         </label>
         <label>
-          Password
+          <span>Password</span>
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(event) => setPassword(event.target.value)}
             minLength={8}
             required
           />
         </label>
         <label>
-          Confirm password
+          <span>Confirm password</span>
           <input
             type="password"
             value={confirmation}
-            onChange={(e) => setConfirmation(e.target.value)}
+            onChange={(event) => setConfirmation(event.target.value)}
             minLength={8}
             required
           />
         </label>
-        {error ? <p className="error">{error}</p> : null}
-        <button type="submit" disabled={busy}>
+        {error ? <p className="alert alert-error">{error}</p> : null}
+        <button type="submit" className="button button-primary button-block" disabled={busy}>
           {busy ? 'Creating…' : 'Create account'}
         </button>
       </form>
-      <p className="muted">
-        Already registered? <Link to="/login">Sign in</Link>
-      </p>
-    </section>
+    </AuthShell>
   );
 }

@@ -70,11 +70,13 @@ class AuthController extends Controller
         return response()->noContent();
     }
 
-    public function me(Request $request): UserResource
+    public function me(Request $request): JsonResponse
     {
         /** @var User $user */
         $user = $request->user();
 
-        return new UserResource($user);
+        // Return a plain object: a bare JsonResource would be wrapped in { data: ... },
+        // which the SPA does not expect for the current-user endpoint.
+        return response()->json(new UserResource($user));
     }
 }

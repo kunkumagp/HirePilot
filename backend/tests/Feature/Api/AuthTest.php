@@ -70,6 +70,18 @@ class AuthTest extends TestCase
             ->assertJson(['message' => 'Unauthenticated.']);
     }
 
+    public function test_current_user_endpoint_returns_an_unwrapped_user(): void
+    {
+        $user = User::factory()->create(['name' => 'Current User', 'plan' => 'pro']);
+
+        $this->withToken($user->createToken('spa')->plainTextToken)
+            ->getJson('/api/user')
+            ->assertOk()
+            ->assertJsonPath('name', 'Current User')
+            ->assertJsonPath('plan', 'pro')
+            ->assertJsonMissingPath('data');
+    }
+
     public function test_logout_revokes_the_current_token(): void
     {
         $user = User::factory()->create();
