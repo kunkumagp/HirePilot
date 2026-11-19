@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
 
     Route::get('/jobs', [JobController::class, 'index']);
 
+    Route::get('/settings/options', [SettingsController::class, 'options']);
     Route::get('/settings', [SettingsController::class, 'show']);
     Route::put('/settings', [SettingsController::class, 'update']);
 

@@ -18,6 +18,13 @@ class UserSetting extends Model
     protected $fillable = [
         'user_id',
         'skills',
+        'field',
+        'field_keywords',
+        'experience_level',
+        'min_years_experience',
+        'work_arrangement',
+        'preferred_countries',
+        'salary_currency',
         'title_include',
         'exclude_words',
         'location_accept',
@@ -34,6 +41,9 @@ class UserSetting extends Model
     {
         return [
             'skills' => 'array',
+            'field_keywords' => 'array',
+            'preferred_countries' => 'array',
+            'min_years_experience' => 'integer',
             'title_include' => 'array',
             'exclude_words' => 'array',
             'location_accept' => 'array',

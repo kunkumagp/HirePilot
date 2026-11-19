@@ -24,13 +24,6 @@ final class FilterPipeline
             return FilterResult::reject('older than max_age_days');
         }
 
-        /** @var list<string> $titleInclude */
-        $titleInclude = $settings?->title_include ?? config('jobhunter.filters.title_include', []);
-
-        if ($titleInclude !== [] && ! Str::contains($job->title, $titleInclude, true)) {
-            return FilterResult::reject('title has no include keyword');
-        }
-
         /** @var list<string> $excludeWords */
         $excludeWords = $settings?->exclude_words ?? config('jobhunter.filters.exclude_words', []);
 
@@ -64,11 +57,15 @@ final class FilterPipeline
             return FilterResult::pass(locationUncertain: $locationUncertain, salaryUnknown: true);
         }
 
-        $isUsd = $job->salaryCurrency === 'USD'
-            || Str::contains($job->title.' '.$job->description, ['$', 'USD'], true);
+        $currency = (string) ($settings?->salary_currency
+            ?? config('jobhunter.preferences.salary_currency', 'USD'));
+        $currencySymbols = $currency === 'USD' ? ['USD', '$'] : [$currency];
 
-        if (! $isUsd) {
-            return FilterResult::reject('salary is not USD');
+        $currencyMatches = $job->salaryCurrency === $currency
+            || Str::contains($job->title.' '.$job->description, $currencySymbols, true);
+
+        if (! $currencyMatches) {
+            return FilterResult::reject('salary currency does not match preference');
         }
 
         $yearlyMax = $this->salaryNormalizer->toYearly($job->salaryMax ?? $job->salaryMin ?? 0.0);

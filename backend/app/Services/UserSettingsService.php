@@ -13,6 +13,7 @@ final class UserSettingsService
     {
         $profile = config('jobhunter.profile');
         $filters = config('jobhunter.filters');
+        $preferences = config('jobhunter.preferences');
         $scoring = config('jobhunter.scoring');
         $notify = config('jobhunter.notify');
 
@@ -20,6 +21,13 @@ final class UserSettingsService
             ['user_id' => $user->id],
             [
                 'skills' => $profile['skills'],
+                'field' => $preferences['field'],
+                'field_keywords' => $preferences['field_keywords'],
+                'experience_level' => $preferences['experience_level'],
+                'min_years_experience' => $preferences['min_years_experience'],
+                'work_arrangement' => $preferences['work_arrangement'],
+                'preferred_countries' => $preferences['preferred_countries'],
+                'salary_currency' => $preferences['salary_currency'],
                 'title_include' => $filters['title_include'],
                 'exclude_words' => $filters['exclude_words'],
                 'location_accept' => $filters['location_accept'],

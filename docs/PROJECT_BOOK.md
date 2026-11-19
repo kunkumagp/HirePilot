@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.2 · Last updated: 2026-11-19
+> **Living document** · Version 2.3 · Last updated: 2026-11-19
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -328,6 +328,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Post-release (2026-11-19) — සියලු active users සඳහා pipeline:** කලින් `jobhunter:run` එක config එකේ සිටි default user ට විතරක් ජොබ් දුන්නා. දැන් එකම fetch එකකින් පස්සේ සියලුම `is_active = true` users ගේ තමන්ගේ settings අනුව filter → score → store → notify කරනවා. මේක `UserPipelineService` එකකට අදාළ කරලා තියෙනවා, ඒ නිසා tenant-isolation එක unit/feature test එකකින් ඔප්පු වෙනවා — එක user ගේ නීති අනිත් අයගේ ප්‍රතිඵල වලට බලපාන්නේ නෑ. CLI output එකත් දැන් per-user counts (`matched / new / notified`) පෙන්නනවා. **PHPUnit: 73 tests, 246 assertions — pass.**
 
+**Post-release (2026-11-19) — per-user job preferences:** එක එක user ගේ රස්සා සෙවුම වෙනස් වෙන නිසා `user_settings` එක පුළුල් කළා — **field/role family** (config එකේ presets + එක user ගේම custom keywords), **experience level** (junior→lead + minimum years), **work arrangement** (remote/hybrid/onsite), **preferred countries/regions** සහ **salary currency**. Hard filters තියෙන්නේ location restrictions, blacklist සහ salary විතරයි; field/skills/experience/arrangement/country දැන් **scoring signals** නිසා ටිකක් අඩු ගැළපීමක් තියෙන ජොබුත් පෙනෙනවා, හැබැයි ලකුණු අඩුවෙන්. Field එකම ගැළපුණු ජොබ් එකක් දැනුම් ලැබීමට ඇති තරම් වෙන්න `field_match = 6`, `min_score = 6` ලෙස සකස් කළා. Preset ලැයිස්තුව frontend එකට දෙන්නේ `GET /api/settings/options` එකෙන් — UI එකේ hardcode නෑ. **PHPUnit: 78 tests, 270 assertions — pass; frontend build සහ browser check ද සාර්ථකයි.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -422,6 +424,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.0 | 2026-11-18 | Milestone 7 සම්පූර්ණ වුණා — Sanctum auth API සහ React SPA (Phase B ආරම්භය); dependency අනුමැතියත් සටහන් කළා. |
 | 2.1 | 2026-11-18 | Milestone 8 සම්පූර්ණ වුණා — plan limits, queued notifications, scheduler සහ SaaS deployment guide; සියලු milestones සම්පූර්ණයි. |
 | 2.2 | 2026-11-19 | `jobhunter:run` එක සියලු active users ට ධාවනය වෙන විදිහට වෙනස් කළා (`UserPipelineService` + tenant isolation tests). |
+| 2.3 | 2026-11-19 | Per-user job preferences එකතු කළා — field presets/custom keywords, experience, work arrangement, countries, salary currency සහ ඒ සඳහා API/UI. |
 
 ---
 

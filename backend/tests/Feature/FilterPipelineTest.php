@@ -53,12 +53,12 @@ class FilterPipelineTest extends TestCase
         $this->assertTrue($result->passed);
     }
 
-    public function test_rejects_job_without_title_include_keyword(): void
+    public function test_keeps_job_without_field_keyword_for_scoring(): void
     {
         $result = app(FilterPipeline::class)->apply($this->makeJob(['title' => 'Office Manager']));
 
-        $this->assertFalse($result->passed);
-        $this->assertSame('title has no include keyword', $result->rejectReason);
+        $this->assertTrue($result->passed);
+        $this->assertNull($result->rejectReason);
     }
 
     public function test_rejects_blacklisted_job(): void
@@ -108,7 +108,7 @@ class FilterPipelineTest extends TestCase
         );
 
         $this->assertFalse($result->passed);
-        $this->assertSame('salary is not USD', $result->rejectReason);
+        $this->assertSame('salary currency does not match preference', $result->rejectReason);
     }
 
     public function test_rejects_salary_below_minimum(): void
@@ -164,11 +164,23 @@ class FilterPipelineTest extends TestCase
 
     public function test_user_settings_override_config_defaults(): void
     {
-        $settings = UserSetting::factory()->make(['title_include' => ['laravel']]);
+        $settings = UserSetting::factory()->make(['salary_currency' => 'EUR']);
 
         $result = app(FilterPipeline::class)->apply($this->makeJob(), $settings);
 
         $this->assertFalse($result->passed);
-        $this->assertSame('title has no include keyword', $result->rejectReason);
+        $this->assertSame('salary currency does not match preference', $result->rejectReason);
+    }
+
+    public function test_accepts_job_in_the_users_preferred_currency(): void
+    {
+        $settings = UserSetting::factory()->make(['salary_currency' => 'EUR']);
+
+        $result = app(FilterPipeline::class)->apply(
+            $this->makeJob(['salaryCurrency' => 'EUR']),
+            $settings,
+        );
+
+        $this->assertTrue($result->passed);
     }
 }

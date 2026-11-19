@@ -13,6 +13,21 @@ use Tests\TestCase;
 
 class SettingsTest extends TestCase
 {
+    public function test_preference_options_come_from_config(): void
+    {
+        $user = User::factory()->create();
+
+        $this->withToken($user->createToken('spa')->plainTextToken)
+            ->getJson('/api/settings/options')
+            ->assertOk()
+            ->assertJsonStructure([
+                'fields' => [['key', 'label']],
+                'experience_levels',
+                'arrangements',
+            ])
+            ->assertJsonFragment(['key' => 'web_development', 'label' => 'Web Development']);
+    }
+
     public function test_returns_settings_and_channels_without_exposing_credentials(): void
     {
         $user = User::factory()->create();
@@ -26,7 +41,7 @@ class SettingsTest extends TestCase
             ->getJson('/api/settings');
 
         $response->assertOk()
-            ->assertJsonPath('settings.min_score', 5)
+            ->assertJsonPath('settings.min_score', 6)
             ->assertJsonPath('channels.0.type', 'email')
             ->assertJsonMissingPath('channels.0.credentials');
     }
@@ -48,6 +63,33 @@ class SettingsTest extends TestCase
         $this->assertSame('Updated Name', $user->fresh()->name);
         $this->assertSame(8, $user->userSetting->fresh()->min_score);
         $this->assertSame(['laravel', 'php'], $user->userSetting->fresh()->skills);
+    }
+
+    public function test_preferences_can_be_updated_through_the_api(): void
+    {
+        $user = User::factory()->create();
+        app(UserSettingsService::class)->createDefaults($user);
+
+        $this->withToken($user->createToken('spa')->plainTextToken)
+            ->putJson('/api/settings', [
+                'field' => 'sales',
+                'field_keywords' => ['hubspot', 'pipeline'],
+                'experience_level' => 'senior',
+                'min_years_experience' => 5,
+                'work_arrangement' => 'hybrid',
+                'preferred_countries' => ['Asia', 'Sri Lanka'],
+                'salary_currency' => 'EUR',
+            ])
+            ->assertOk();
+
+        $settings = $user->userSetting->fresh();
+        $this->assertSame('sales', $settings->field);
+        $this->assertSame(['hubspot', 'pipeline'], $settings->field_keywords);
+        $this->assertSame('senior', $settings->experience_level);
+        $this->assertSame(5, $settings->min_years_experience);
+        $this->assertSame('hybrid', $settings->work_arrangement);
+        $this->assertSame(['Asia', 'Sri Lanka'], $settings->preferred_countries);
+        $this->assertSame('EUR', $settings->salary_currency);
     }
 
     public function test_channel_credentials_are_stored_encrypted(): void
