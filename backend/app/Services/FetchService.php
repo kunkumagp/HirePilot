@@ -27,6 +27,15 @@ final class FetchService
             $hash = $this->dedupe->contentHash($job);
 
             if (isset($seenHashes[$hash])) {
+                // Keep the existing posting (no duplicate user jobs), but refresh
+                // its content in case the source updated the description.
+                if ($persist) {
+                    JobPosting::query()
+                        ->where('source', $job->source)
+                        ->where('external_id', $job->externalId)
+                        ->update(['description' => $job->description]);
+                }
+
                 continue;
             }
 

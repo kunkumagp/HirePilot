@@ -716,11 +716,27 @@ input {
   border-radius: 10px;
   padding: 1rem;
   margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  max-height: 620px;
+  overflow-y: auto;
+}
+
+.job-description {
+  white-space: pre-line;
+}
+
+.job-description p {
+  margin: 0 0 0.9rem;
+}
+
+.job-description p:last-child {
+  margin-bottom: 0;
+}
+
+.cover-letter {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.85rem;
-  line-height: 1.6;
-  max-height: 520px;
-  overflow-y: auto;
 }
 
 .tag-row {
