@@ -86,19 +86,12 @@ export function Jobs() {
                     </td>
                     <td>
                       <div className="row-actions">
-                        <Link className="link-button" to={`/jobs/${job.id}`}>Details →</Link>
+                        <Link className="button button-secondary button-mini" to={`/jobs/${job.id}`}>
+                          Details
+                        </Link>
                         <a className="link-button" href={job.url} target="_blank" rel="noreferrer">
                           Apply ↗
                         </a>
-                        {job.cover_letter ? (
-                          <button
-                            type="button"
-                            className="button button-mini"
-                            onClick={() => void navigator.clipboard.writeText(job.cover_letter ?? '')}
-                          >
-                            Copy letter
-                          </button>
-                        ) : null}
                       </div>
                     </td>
                   </tr>
