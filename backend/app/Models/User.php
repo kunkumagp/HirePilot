@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(NotificationDelivery::class);
     }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(Document::class);
+    }
 }

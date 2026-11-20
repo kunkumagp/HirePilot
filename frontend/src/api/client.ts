@@ -24,10 +24,11 @@ export class ApiError extends Error {
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
+  const isFormData = options.body instanceof FormData;
   const response = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       Accept: 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers ?? {}),
@@ -50,4 +51,35 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   }
 
   return payload;
+}
+
+export async function downloadFile(
+  path: string,
+  options: RequestInit,
+  filename: string,
+): Promise<void> {
+  const token = getToken();
+  const response = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/octet-stream',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers ?? {}),
+    },
+  });
+
+  if (!response.ok) {
+    throw new ApiError(`Download failed with status ${response.status}`, response.status);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }

@@ -77,7 +77,13 @@ API එක වෙන URL එකක් නම් `frontend/.env.example` එක `
 
 ### React SPA
 
-`npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), සහ Settings. Settings එකේ එක එක user කෙනෙක්ට තමන්ගේම **"Job title / role keywords"** free-text එක (උදා: `React Developer, HubSpot Marketing Manager`) — මේක තමයි වැඩිම ලකුණු දෙන signal එක. ඒකට අමතරව optional **job category සහ sub-category** dropdown දෙකක් (18 කාණ්ඩයක් / 96 උප-කාණ්ඩයක්) සහ custom keywords ද තියෙනවා, **skills**, **experience level / minimum years**, **work arrangement** (Remote/Hybrid/On-site), **preferred countries** සහ **salary currency** දාගන්න පුළුවන්. SMTP සහ bot token වගේ credentials user ගේම ඒවා ලෙස encrypted ලෙස store වෙනවා. Options ලැබෙන්නේ config එකෙන් (`/api/settings/options`) — frontend එකේ hardcode නෑ.
+`npm run dev` එකෙන් පස්සේ **/register** එකෙන් account එකක් හදලා **/login** වෙන්න. Login එකේදී ලැබෙන token එක browser එකේ localStorage එකේ තියෙනවා; API requests එක්ක `Bearer` header එකක් විදිහට යනවා. Pages: Dashboard, Jobs, Notifications (unread badge එක්ක), Settings, සහ Documents. Settings එකේ එක එක user කෙනෙක්ට තමන්ගේම **"Job title / role keywords"** free-text එක (උදා: `React Developer, HubSpot Marketing Manager`) — මේක තමයි වැඩිම ලකුණු දෙන signal එක. ඒකට අමතරව optional **job category සහ sub-category** dropdown දෙකක් (18 කාණ්ඩයක් / 96 උප-කාණ්ඩයක්) සහ custom keywords ද තියෙනවා, **skills**, **experience level / minimum years**, **work arrangement** (Remote/Hybrid/On-site), **preferred countries** සහ **salary currency** දාගන්න පුළුවන්. SMTP සහ bot token වගේ credentials user ගේම ඒවා ලෙස encrypted ලෙස store වෙනවා. Options ලැබෙන්නේ config එකෙන් (`/api/settings/options`) — frontend එකේ hardcode නෑ.
+
+### Documents / ATS CV builder
+
+**/documents** පිටුවෙන් ඔබේ CV එක **PDF** ලෙස upload කරන්න පුළුවන් (උපරිම 10 MB). Upload කරද්දීම server එකෙන් text එක අරගෙන **rule-based** ආකාරයට මේ දේවල් උපුටා ගන්නවා: නම, ඊමේල්, දුරකථනය, Summary, Skills, Experience සහ Education. කිසිම AI/LLM එකක් යොදන්නේ නෑ.
+
+ඊට පස්සේ ඒ දත්ත ටික edit කරලා, **single-column, ATS-friendly CV** එකක් හදලා **DOCX** සහ **PDF** විදිහට download කරන්න පුළුවන්. Upload කරපු මුල් PDF එක සහ උපුටාගත්ත දත්ත එක user කෙනෙකුටම පමණයි පෙනෙන්නේ (tenant isolation). CV template එක තවම සරල default එකක් — ඔබට ගැළපෙන design එකක් දුන්නොත් ඊට අනුව වෙනස් කරන්න පුළුවන්.
 
 ### එක command එකකින් start / stop
 

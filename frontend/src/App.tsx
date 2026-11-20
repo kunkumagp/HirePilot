@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Dashboard } from './pages/Dashboard';
+import { Documents } from './pages/Documents';
 import { Jobs } from './pages/Jobs';
 import { JobDetailPage } from './pages/JobDetail';
 import { Login } from './pages/Login';
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/documents" element={<Documents />} />
         </Route>
       </Route>
 

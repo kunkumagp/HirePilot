@@ -17,6 +17,7 @@ const navigation = [
   { to: '/jobs', label: 'Jobs', icon: '▤' },
   { to: '/notifications', label: 'Notifications', icon: '◉' },
   { to: '/settings', label: 'Settings', icon: '⚙' },
+  { to: '/documents', label: 'Documents', icon: '📄' },
 ];
 
 export function Layout() {
