@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.8 · Last updated: 2026-11-19
+> **Living document** · Version 2.9 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -438,6 +438,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.6 | 2026-11-19 | Free-text job query field එක එකතු කළා — පරිශීලකයාට නිශ්චිත රස්සා designation ටයිප් කරන්න පුළුවන්; dropdown දෙක optional ලෙස ඉතිරි වුණා. |
 | 2.7 | 2026-11-19 | Job details page එක, full description, Apply button සහ cover letter එක Re-create කරන්න පුළුවන් button එක එකතු කළා. |
 | 2.8 | 2026-11-19 | Job description එක මුල් post එකේ paragraph ව්‍යුහයත් එක්ක `<p>` blocks විදිහට පෙන්නන්න හදුවා. |
+| 2.9 | 2026-11-20 | Job list එකේ ජොබ් title එකත් click කරලා details page එකට යන්න සම්බන්ධ කළා. |
 
 ---
 
