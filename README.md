@@ -155,12 +155,65 @@ CLI එකෙන් live run එකක් සඳහා `--dry-run` අයින�
 
 ## SaaS deployment සඳහා සූදානම
 
-- **Database:** SQLite වෙනුවට Postgres පාවිච්චි කරන්න පුළුවන් — `.env` එකේ `DB_CONNECTION=pgsql` සහ `DB_HOST/DB_PORT/DB_DATABASE/DB_USERNAME/DB_PASSWORD` සකසලා `php artisan migrate --force` ධාවනය කරන්න. Schema එක DB-specific SQL නැතුව ලියලා තියෙනවා.
-- **Queues:** `QUEUE_CONNECTION=database` සහ `config/jobhunter.php` එකේ `notify.use_queue = true` දාලා `php artisan queue:work` ධාවනය කරන්න. එතකොට `DispatchUserNotifications` job එක notification බාර ගන්නවා.
-- **Scheduler:** SaaS host එකක cron එකෙන් හැම මිනිත්තුවකම `php artisan schedule:run` කරන්න — `routes/console.php` එකේ විනාඩි 30ක schedule එක තියෙනවා. **GitHub Actions එකත් එකම database එක ලියනවා නම් එක් ස්ථානයක් පමණක් ධාවනය කරන්න.**
-- **Frontend:** `npm run build` එකෙන් හදපු `frontend/dist` එක static hosting එකක දාන්න. `VITE_API_BASE_URL` එක production API එකට දාලා, backend එකේ `FRONTEND_ORIGINS` එකට ඒ origin එකත් එකතු කරන්න.
-- **APP_KEY:** එකම අගය ස්ථිරව තියන්න — නැත්නම් encrypt කරපු per-user SMTP credentials කියවන්න බැහැ.
-- **Plans (placeholder):** `users.plan` එක `free` හෝ `pro`; සීමා `config/jobhunter.php` එකේ `plans` යටතේ. **Payment/billing integrate කරලා නෑ** — මේක පසුකාලීන වැඩක් සඳහා වූ හිස් හැඩයක් විතරයි.
+Secrets කිසිවක් repo එකේ නෑ — හැම අගයම server එකේ `.env` එකේ විතරයි. `backend/.env.production.example` එක ආරම්භක ලැයිස්තුව විදිහට පාවිච්චි කරන්න.
+
+### 1. Backend environment එක
+
+```sh
+cd backend
+cp .env.production.example .env
+php artisan key:generate --show     # ලැබෙන APP_KEY එක .env එකට දාන්න (ස්ථිරව තබාගන්න)
+```
+
+- `DB_CONNECTION=pgsql` සහ `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` සකසන්න. Schema එක DB-specific SQL නැතුව ලියලා තියෙනවා.
+- `QUEUE_CONNECTION=database` සහ **`JOBHUNTER_USE_QUEUE=true`** — එතකොට `DispatchUserNotifications` job එක notification බාර ගන්නවා.
+- `FRONTEND_ORIGINS` එකට ඔබේ frontend domain එක දාන්න (අලුත් origin එක එකතු කරද්දී backend එක restart කරන්න ඕනේ — config cache තියෙන නිසා).
+- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` අමතර නැම්මක් නම් හිස්ව තියන්න පුළුවන්.
+
+### 2. Dependencies සහ cache
+
+```sh
+cd backend
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Config එකේ යමක් වෙනස් කළොත් `php artisan config:clear` කරලා ආයෙ cache කරන්න ඕනේ.
+
+### 3. Queue worker
+
+`deploy/supervisor.conf.example` එක ඔබේ Supervisor එකට copy කරලා path ටික සකසන්න:
+
+```sh
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl status hirepilot-worker:*
+```
+
+### 4. Scheduler (cron)
+
+`deploy/crontab.example` එක අනුව හැම මිනිත්තුවකම `php artisan schedule:run` ධාවනය වෙන්න දාන්න. සැබෑ වැඩේ `backend/routes/console.php` එකේ තියෙන විනාඩු-30 schedule එකෙන් වෙනවා.
+
+⚠️ **GitHub Actions එකත් එකම database එක ලියනවා නම් එක් ස්ථානයක් පමණක් ධාවනය කරන්න** — නැත්නම් දෙපාරක් ජොබ් එකතු වෙන්න පුළුවන්.
+
+### 5. Frontend
+
+```sh
+cd frontend
+npm ci
+VITE_API_BASE_URL=https://api.yourdomain.com/api npm run build
+```
+
+හදුණු `frontend/dist` එක static hosting එකක (Nginx, Netlify, Vercel, Cloudflare Pages ආදිය) දාන්න. SPA එකේ `/jobs/123` වගේ URL එකක් directly ඇහුණොත් `index.html` එකට fallback කරන්න ඕනේ.
+
+### 6. Plans සහ ඊළඟ පියවර
+
+`users.plan` එක `free` හෝ `pro`; සීමා `config/jobhunter.php` එකේ `plans` යටතේ. **Payment/billing integrate කරලා නෑ** — ඒක පසුකාලීන වැඩක්.
+
+පළමු deploy එකේදී මේ ටික පරීක්ෂා කරන්න: login/register, `/api/jobs/run`, Telegram/Email channel එකකින් සැබෑ notification එකක්, සහ scheduler එකෙන් විනාඩි 30කට පස්සේ අලුත් ජොබ් එනවද කියන එක.
 
 ---
 
