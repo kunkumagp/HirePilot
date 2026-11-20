@@ -13,6 +13,9 @@ export function Jobs() {
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [salaryFilter, setSalaryFilter] = useState('all');
+  const [scoreFilter, setScoreFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const applyPage = (result: Paginated<Job>, append: boolean) => {
     setJobs((current) =>
@@ -47,9 +50,51 @@ export function Jobs() {
     }
   };
 
-  const filtered = jobs.filter((job) =>
-    `${job.title} ${job.company} ${job.source}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const salaryValue = (job: Job): number | null => {
+    if (job.salary_unknown) {
+      return null;
+    }
+
+    const raw = job.salary_max ?? job.salary_min;
+
+    if (raw === null) {
+      return null;
+    }
+
+    const value = Number(raw);
+
+    return Number.isFinite(value) ? value : null;
+  };
+
+  const filtered = jobs.filter((job) => {
+    const matchesSearch = `${job.title} ${job.company} ${job.source}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const salary = salaryValue(job);
+    const isNumericSalary =
+      salaryFilter !== 'all' && salaryFilter !== 'listed' && salaryFilter !== 'unknown';
+    const matchesSalary =
+      salaryFilter === 'all' ||
+      (salaryFilter === 'listed' && salary !== null) ||
+      (salaryFilter === 'unknown' && salary === null) ||
+      (isNumericSalary && salary !== null && salary >= Number(salaryFilter));
+
+    const matchesScore = scoreFilter === 'all' || job.score >= Number(scoreFilter);
+    const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
+
+    return matchesSearch && matchesSalary && matchesScore && matchesStatus;
+  });
+
+  const resetFilters = () => {
+    setSearch('');
+    setSalaryFilter('all');
+    setScoreFilter('all');
+    setStatusFilter('all');
+  };
+
+  const hasFilters =
+    search !== '' || salaryFilter !== 'all' || scoreFilter !== 'all' || statusFilter !== 'all';
 
   const runSearch = async () => {
     setRunning(true);
@@ -81,18 +126,48 @@ export function Jobs() {
           <h2>Your matched jobs</h2>
           <p className="muted">Scored, filtered and ranked by your rules.</p>
         </div>
-        <div className="heading-actions">
-          <input
-            className="search-input"
-            type="search"
-            placeholder="Search jobs or companies…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <button type="button" className="button button-primary" onClick={() => void runSearch()} disabled={running}>
-            {running ? 'Searching…' : 'Run job search'}
+        <button
+          type="button"
+          className="button button-primary"
+          onClick={() => void runSearch()}
+          disabled={running}
+        >
+          {running ? 'Searching…' : 'Run job search'}
+        </button>
+      </div>
+
+      <div className="filters-bar">
+        <input
+          className="search-input"
+          type="search"
+          placeholder="Search jobs or companies…"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <select value={salaryFilter} onChange={(event) => setSalaryFilter(event.target.value)}>
+          <option value="all">Any salary</option>
+          <option value="listed">Salary listed</option>
+          <option value="unknown">Salary not listed</option>
+          <option value="60000">≥ 60k / year</option>
+          <option value="100000">≥ 100k / year</option>
+        </select>
+        <select value={scoreFilter} onChange={(event) => setScoreFilter(event.target.value)}>
+          <option value="all">Any score</option>
+          <option value="3">Score ≥ 3</option>
+          <option value="6">Score ≥ 6</option>
+          <option value="9">Score ≥ 9</option>
+        </select>
+        <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+          <option value="all">Any status</option>
+          <option value="new">New</option>
+          <option value="notified">Notified</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        {hasFilters ? (
+          <button type="button" className="button button-mini" onClick={resetFilters}>
+            Reset
           </button>
-        </div>
+        ) : null}
       </div>
 
       {notice ? <p className="save-message">{notice}</p> : null}
