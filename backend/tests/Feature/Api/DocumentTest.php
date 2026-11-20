@@ -16,7 +16,7 @@ class DocumentTest extends TestCase
     private function pdfContent(): string
     {
         $dompdf = new Dompdf;
-        $dompdf->loadHtml('<h1>Jane Doe</h1><p>jane@example.com</p><h2>SUMMARY</h2><p>React developer with 5 years experience.</p><h2>SKILLS</h2><p>React, PHP, Laravel</p><h2>EDUCATION</h2><p>BSc Computer Science</p>');
+        $dompdf->loadHtml('<h1>Jane Doe</h1><p>Software Engineer | React Developer</p><p>Sri Lanka | Open to Remote</p><p>jane@example.com | +94 77 123 4567 | https://linkedin.com/in/janedoe | https://github.com/janedoe</p><h2>SUMMARY</h2><p>React developer with 5 years experience.</p><h2>SKILLS</h2><p>React, PHP, Laravel</p><h2>EDUCATION</h2><p>BSc Computer Science</p>');
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
@@ -39,6 +39,9 @@ class DocumentTest extends TestCase
         $this->assertStringContainsString('React', $document->parsed_text);
         $this->assertContains('React', $document->extracted_data['skills']);
         $this->assertSame('jane@example.com', $document->extracted_data['email']);
+        $this->assertSame('Software Engineer | React Developer', $document->extracted_data['tagline']);
+        $this->assertSame('Sri Lanka | Open to Remote', $document->extracted_data['location']);
+        $this->assertStringContainsString('linkedin.com/in/janedoe', $document->extracted_data['linkedin']);
     }
 
     public function test_user_can_generate_docx_and_pdf_from_uploaded_cv(): void

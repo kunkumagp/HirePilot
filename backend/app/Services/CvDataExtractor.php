@@ -33,8 +33,12 @@ final class CvDataExtractor
 
         $result = [
             'name' => null,
+            'tagline' => '',
+            'location' => '',
             'email' => null,
             'phone' => null,
+            'linkedin' => '',
+            'github' => '',
             'summary' => '',
             'skills' => [],
             'experience' => '',
@@ -51,6 +55,14 @@ final class CvDataExtractor
 
         if (preg_match('/(?:\+?\d[\d\s().-]{7,}\d)/', $text, $matches)) {
             $result['phone'] = trim($matches[0]);
+        }
+
+        if (preg_match('#https?://(?:www\.)?linkedin\.com/in/[\w-]+#i', $text, $matches)) {
+            $result['linkedin'] = $matches[0];
+        }
+
+        if (preg_match('#https?://(?:www\.)?github\.com/[\w.-]+#i', $text, $matches)) {
+            $result['github'] = $matches[0];
         }
 
         $current = null;
@@ -78,6 +90,16 @@ final class CvDataExtractor
             }
 
             if ($current === null) {
+                $isContactLine = str_contains($line, 'Phone') || str_contains($line, 'Email');
+
+                if (! $isContactLine && str_contains($line, '|')) {
+                    if ($result['tagline'] === '') {
+                        $result['tagline'] = $line;
+                    } elseif ($result['location'] === '') {
+                        $result['location'] = $line;
+                    }
+                }
+
                 continue;
             }
 

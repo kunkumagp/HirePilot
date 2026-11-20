@@ -60,8 +60,12 @@ export interface DocumentItem {
 
 export interface CvData {
   name: string;
+  tagline: string;
+  location: string;
   email: string;
   phone: string;
+  linkedin: string;
+  github: string;
   summary: string;
   skills: string[];
   experience: string;
