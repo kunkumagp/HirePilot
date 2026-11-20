@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 2.11 · Last updated: 2026-11-20
+> **Living document** · Version 3.0 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -338,6 +338,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Post-release (2026-11-19) — paragraph-preserving job descriptions:** මුල් HTML එකේ තිබුණු paragraph/list break ටික `TextNormalizer` එක කලින් එක space එකකට ගුලි කරලා දැම්මා. දැන් block tags (`</p>`, `</h3>`, `</li>` සහ `<br>`) newline බවට හරවලා, පේළියක ඇතුළේ spaces විතරක් collapse කරනවා — ඒ නිසා මුල් post එකේ ආකාරයටම paragraph වශයෙන් කියවන්න පුළුවන්. Details page එක දැන් description එක blank-line අනුව කඩලා `<p>` blocks විදිහට පෙන්නනවා (උදා. Lemon.io post එකේ **35 paragraphs**). පරණ job ටිකත් refresh වෙන්න දැන් duplicate උනත් එම source එකේ description එක update වෙන විදිහට FetchService එක හදුවා. **PHPUnit: 88 tests, 307 assertions — pass; browser එකෙන් paragraph rendering තහවුරු කළා.**
 
+**Release v1.0 (2026-11-20):** සියලුම milestone සහ post-release වැඩිදියුණු කිරීම් `dev` එකට එකතු වී අවසන් වුණා. `main` එකට merge කරලා `v1.0` tag එක දැම්මා. දැන් හැම `push`/`pull request` එකකදීම **CI** එකෙන් backend tests (90 tests / 316 assertions) සහ frontend production build එක ධාවනය වෙනවා.
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -441,6 +443,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.9 | 2026-11-20 | Job list එකේ ජොබ් title එකත් click කරලා details page එකට යන්න සම්බන්ධ කළා. |
 | 2.10 | 2026-11-20 | Job list එකෙන් "Copy letter" button එක අයින් කරලා, "Details" එක button එකක් කළා. |
 | 2.11 | 2026-11-20 | Jobs පිටුවේ "Run job search" button එකත් `POST /api/jobs/run` එකත් එකතු කළා — click කරලා sources වලින් ජොබ් ගෙන DB එකට දාන්න පුළුවන්. Pipeline එක `JobRunService` එකට ගෙනත් command එකයි API එකයි දෙකම ඒක පාවිච්චි කරනවා. |
+| 3.0 | 2026-11-20 | **Release v1.0:** `dev → main` merge, `v1.0` tag, සහ `.github/workflows/ci.yml` එකතු කළා — හැම push/PR එකකදීම backend PHPUnit සහ frontend build ධාවනය වෙනවා. |
 
 ---
 
