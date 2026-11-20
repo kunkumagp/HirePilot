@@ -42,7 +42,7 @@ class SettingsTest extends TestCase
             ->getJson('/api/settings');
 
         $response->assertOk()
-            ->assertJsonPath('settings.min_score', 6)
+            ->assertJsonPath('settings.min_score', 3)
             ->assertJsonPath('channels.0.type', 'email')
             ->assertJsonMissingPath('channels.0.credentials');
     }

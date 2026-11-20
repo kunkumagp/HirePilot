@@ -172,6 +172,7 @@ php artisan migrate
 php artisan db:seed --class=DefaultUserSeeder
 php artisan test --compact
 php artisan jobhunter:run --dry-run
+php artisan jobhunter:backfill
 vendor/bin/pint --dirty --format agent
 
 # React frontend (Windows වල npm.cmd, macOS/Linux වල npm)

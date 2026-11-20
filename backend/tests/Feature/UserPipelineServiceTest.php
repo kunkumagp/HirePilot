@@ -83,6 +83,8 @@ class UserPipelineServiceTest extends TestCase
         $reactUser->userSetting->update([
             'skills' => ['react'],
             'field' => 'design',
+            'job_query' => null,
+            'min_score' => 6,
             'field_keywords' => ['react'],
         ]);
 
@@ -91,6 +93,8 @@ class UserPipelineServiceTest extends TestCase
         $laravelUser->userSetting->update([
             'skills' => ['laravel'],
             'field' => 'sales',
+            'job_query' => null,
+            'min_score' => 6,
             'field_keywords' => ['laravel'],
         ]);
 

@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 3.0 · Last updated: 2026-11-20
+> **Living document** · Version 3.1 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -340,6 +340,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Release v1.0 (2026-11-20):** සියලුම milestone සහ post-release වැඩිදියුණු කිරීම් `dev` එකට එකතු වී අවසන් වුණා. `main` එකට merge කරලා `v1.0` tag එක දැම්මා. දැන් හැම `push`/`pull request` එකකදීම **CI** එකෙන් backend tests (90 tests / 316 assertions) සහ frontend production build එක ධාවනය වෙනවා.
 
+**Post-release (2026-11-20) — relaxed matching + backfill:** පරිශීලකයාට පෙනුණේ ජොබ් 3ක් විතරයි. හේතුව තත්ත්වය නොව rules බව දත්ත වලින් තහවුරු වුණා — DB එකේ 304 ජොබ් තිබුණත් `max_age_days = 14` නිසා 83ක් පමණයි ඉතුරු වුණේ; `location_uncertain = -2` නිසා බොහෝ ජොබ් ඍණ ලකුණු ගත්තා. දැන් defaults ලිහිල් කළා: `max_age_days = 60`, `min_score = 3`, `location_uncertain = 0` සහ පුළුල් `job_query` (web, frontend, react, node, php, full stack, javascript, typescript). සියලු ස්ථිර ජොබ් වලටත් වර්තමාන නීති යොදන්න **`php artisan jobhunter:backfill`** command එක එකතු වුණා — ඒකෙන් admin ට 31ක් සහ default user ට 32ක් නව user_jobs හැදුණා. **PHPUnit: 90 tests, 316 assertions — pass.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -444,6 +446,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 2.10 | 2026-11-20 | Job list එකෙන් "Copy letter" button එක අයින් කරලා, "Details" එක button එකක් කළා. |
 | 2.11 | 2026-11-20 | Jobs පිටුවේ "Run job search" button එකත් `POST /api/jobs/run` එකත් එකතු කළා — click කරලා sources වලින් ජොබ් ගෙන DB එකට දාන්න පුළුවන්. Pipeline එක `JobRunService` එකට ගෙනත් command එකයි API එකයි දෙකම ඒක පාවිච්චි කරනවා. |
 | 3.0 | 2026-11-20 | **Release v1.0:** `dev → main` merge, `v1.0` tag, සහ `.github/workflows/ci.yml` එකතු කළා — හැම push/PR එකකදීම backend PHPUnit සහ frontend build ධාවනය වෙනවා. |
+| 3.1 | 2026-11-20 | Matching rules ලිහිල් කරලා `jobhunter:backfill` command එක එකතු කළා — ජොබ් ගාණ 3→31 දක්වා වැඩි වුණා. |
 
 ---
 

@@ -33,7 +33,7 @@ return [
     */
 
     'filters' => [
-        'max_age_days' => 14,
+        'max_age_days' => 60,
         'title_include' => ['web', 'frontend', 'backend', 'full stack', 'fullstack', 'react', 'node', 'laravel'],
         'exclude_words' => ['intern', 'unpaid', 'principal', 'senior staff', 'security clearance'],
         'location_accept' => ['worldwide', 'anywhere', 'global', 'asia', 'apac', 'sri lanka'],
@@ -71,7 +71,7 @@ return [
 
     'preferences' => [
         'field' => 'web_development',
-        'job_query' => null,
+        'job_query' => 'web, frontend, react, node, php, full stack, javascript, typescript',
         'job_category' => null,
         'job_subcategory' => null,
         'field_keywords' => [],
@@ -117,15 +117,15 @@ return [
     */
 
     'scoring' => [
-        // A field match alone (6) is enough; generic bonuses max out at 5.
-        'min_score' => 6,
+        // Relaxed defaults: more recent jobs plus broader role keywords.
+        'min_score' => 3,
         'weights' => [
             'title_skill' => 3,
             'desc_skill' => 1,
             'worldwide' => 2,
             'usd_salary' => 2,
             'fresh_24h' => 1,
-            'location_uncertain' => -2,
+            'location_uncertain' => 0,
             'field_match' => 6,
             'query_match' => 6,
             'query_token' => 1,

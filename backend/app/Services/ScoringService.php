@@ -45,7 +45,9 @@ final class ScoringService
         $locationText = $job->locationText.' '.implode(' ', $job->tags);
 
         // Free-text query typed by the user (e.g. "React Developer, HubSpot Marketing").
-        $query = trim((string) ($settings?->job_query ?? config('jobhunter.preferences.job_query', '')));
+        $query = $settings !== null
+            ? trim((string) ($settings->job_query ?? ''))
+            : trim((string) config('jobhunter.preferences.job_query', ''));
 
         if ($query !== '') {
             /** @var list<string> $stopWords */
