@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 3.5 · Last updated: 2026-11-20
+> **Living document** · Version 3.6 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -455,6 +455,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 3.3 | 2026-11-20 | Jobs පිටුවේ header එක හදුවා (Run button එක වෙනම), පහළින් advanced filter bar එකක් එකතු කළා — search + salary + score + status, Reset button එක්ක. |
 | 3.4 | 2026-11-20 | SaaS deploy සූදානම: `backend/.env.production.example`, `deploy/crontab.example`, `deploy/supervisor.conf.example`, env-configurable queue toggle සහ පියවරෙන් පියවර සිංහල deployment guide එක README එකේ. |
 | 3.5 | 2026-11-20 | Documents අංශය එකතු වුණා — PDF CV upload, rule-based data extraction, සහ ATS-friendly CV එක DOCX/PDF ලෙස download කිරීම. |
+| 3.6 | 2026-11-20 | CV generator එක පරිශීලකයා දුන්න DOCX format එකට ගැළපුණා — 0.5" margins, 16pt name, 12pt headings, 10pt body; tagline/location/LinkedIn/Github fields එක්ක. |
 
 ---
 

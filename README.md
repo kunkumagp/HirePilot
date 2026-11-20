@@ -83,7 +83,7 @@ API එක වෙන URL එකක් නම් `frontend/.env.example` එක `
 
 **/documents** පිටුවෙන් ඔබේ CV එක **PDF** ලෙස upload කරන්න පුළුවන් (උපරිම 10 MB). Upload කරද්දීම server එකෙන් text එක අරගෙන **rule-based** ආකාරයට මේ දේවල් උපුටා ගන්නවා: නම, ඊමේල්, දුරකථනය, Summary, Skills, Experience සහ Education. කිසිම AI/LLM එකක් යොදන්නේ නෑ.
 
-ඊට පස්සේ ඒ දත්ත ටික edit කරලා, **single-column, ATS-friendly CV** එකක් හදලා **DOCX** සහ **PDF** විදිහට download කරන්න පුළුවන්. Upload කරපු මුල් PDF එක සහ උපුටාගත්ත දත්ත එක user කෙනෙකුටම පමණයි පෙනෙන්නේ (tenant isolation). CV template එක තවම සරල default එකක් — ඔබට ගැළපෙන design එකක් දුන්නොත් ඊට අනුව වෙනස් කරන්න පුළුවන්.
+ඊට පස්සේ ඒ දත්ත ටික edit කරලා, **single-column, ATS-friendly CV** එකක් හදලා **DOCX** සහ **PDF** විදිහට download කරන්න පුළුවන්. Upload කරපු මුල් PDF එක සහ උපුටාගත්ත දත්ත එක user කෙනෙකුටම පමණයි පෙනෙන්නේ (tenant isolation). CV එක ඔබ දුන්න ආකෘතියටම හදනවා — **0.5" margins, 16pt bold name, 12pt bold uppercase section headings, 10pt body**, contact line එකත් එක්ක. Sections: SUMMARY, CORE TECHNICAL SKILLS, PROFESSIONAL EXPERIENCE, සහ EDUCATION & CERTIFICATIONS. Tagline, location, LinkedIn සහ Github ද editor එකෙන් වෙනස් කරන්න පුළුවන්. වෙනත් design එකක් ඕනේ වුණොත් ඒකත් දුන්න විදිහටම වෙනස් කරන්න පුළුවන්.
 
 ### එක command එකකින් start / stop
 

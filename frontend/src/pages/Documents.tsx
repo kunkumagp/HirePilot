@@ -4,8 +4,12 @@ import type { CvData, DocumentItem } from '../types';
 
 const emptyCv = (): CvData => ({
   name: '',
+  tagline: '',
+  location: '',
   email: '',
   phone: '',
+  linkedin: '',
+  github: '',
   summary: '',
   skills: [],
   experience: '',
@@ -25,8 +29,12 @@ function fromExtracted(data: Record<string, unknown> | null): CvData {
 
   return {
     name: asText('name'),
+    tagline: asText('tagline'),
+    location: asText('location'),
     email: asText('email'),
     phone: asText('phone'),
+    linkedin: asText('linkedin'),
+    github: asText('github'),
     summary: asText('summary'),
     skills: Array.isArray(data.skills) ? data.skills.map(String) : [],
     experience: asText('experience'),
@@ -213,12 +221,28 @@ export function Documents() {
                 <input value={form.name} onChange={(e) => setField('name', e.target.value)} />
               </label>
               <label>
+                <span>Tagline / role keywords</span>
+                <input value={form.tagline} onChange={(e) => setField('tagline', e.target.value)} />
+              </label>
+              <label className="span-two">
+                <span>Location</span>
+                <input value={form.location} onChange={(e) => setField('location', e.target.value)} />
+              </label>
+              <label>
                 <span>Email</span>
                 <input value={form.email} onChange={(e) => setField('email', e.target.value)} />
               </label>
-              <label className="span-two">
+              <label>
                 <span>Phone</span>
                 <input value={form.phone} onChange={(e) => setField('phone', e.target.value)} />
+              </label>
+              <label>
+                <span>LinkedIn URL</span>
+                <input value={form.linkedin} onChange={(e) => setField('linkedin', e.target.value)} />
+              </label>
+              <label>
+                <span>Github URL</span>
+                <input value={form.github} onChange={(e) => setField('github', e.target.value)} />
               </label>
               <label className="span-two">
                 <span>Skills (comma separated)</span>

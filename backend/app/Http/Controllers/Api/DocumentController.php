@@ -103,8 +103,12 @@ class DocumentController extends Controller
 
         $validated = $request->validate([
             'name' => ['sometimes', 'nullable', 'string', 'max:120'],
+            'tagline' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'location' => ['sometimes', 'nullable', 'string', 'max:255'],
             'email' => ['sometimes', 'nullable', 'string', 'max:120'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:60'],
+            'linkedin' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'github' => ['sometimes', 'nullable', 'string', 'max:255'],
             'summary' => ['sometimes', 'nullable', 'string'],
             'skills' => ['sometimes', 'array'],
             'experience' => ['sometimes', 'nullable', 'string'],
