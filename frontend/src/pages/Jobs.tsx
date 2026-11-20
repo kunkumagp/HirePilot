@@ -9,16 +9,43 @@ export function Jobs() {
   const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [total, setTotal] = useState(0);
+
+  const applyPage = (result: Paginated<Job>, append: boolean) => {
+    setJobs((current) =>
+      append
+        ? [...current, ...result.data.filter((job) => !current.some((item) => item.id === job.id))]
+        : result.data,
+    );
+    setPage(result.meta?.current_page ?? 1);
+    setHasMore((result.meta?.last_page ?? 1) > (result.meta?.current_page ?? 1));
+    setTotal(result.meta?.total ?? result.data.length);
+  };
 
   useEffect(() => {
     void (async () => {
       try {
-        setJobs((await api<Paginated<Job>>('/jobs')).data);
+        applyPage(await api<Paginated<Job>>('/jobs'), false);
       } catch (cause) {
         setError(cause instanceof Error ? cause.message : 'Could not load jobs');
       }
     })();
   }, []);
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+
+    try {
+      applyPage(await api<Paginated<Job>>(`/jobs?page=${page + 1}`), true);
+    } catch (cause) {
+      setNotice(cause instanceof Error ? cause.message : 'Could not load more jobs');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const filtered = jobs.filter((job) =>
     `${job.title} ${job.company} ${job.source}`.toLowerCase().includes(search.toLowerCase()),
@@ -32,7 +59,7 @@ export function Jobs() {
       const result = await api<{ fetched: number; new: number; matches: number }>('/jobs/run', {
         method: 'POST',
       });
-      setJobs((await api<Paginated<Job>>('/jobs')).data);
+      applyPage(await api<Paginated<Job>>('/jobs'), false);
       setNotice(
         `Search complete — ${result.fetched} fetched from sources, ${result.new} new matches for you.`,
       );
@@ -105,7 +132,7 @@ export function Jobs() {
                         : `${job.salary_currency ?? ''} ${job.salary_min ?? '?'}–${job.salary_max ?? '?'}`}
                     </td>
                     <td>
-                      <span className={`score-badge ${job.score >= 5 ? 'score-good' : 'score-low'}`}>
+                      <span className={`score-badge ${job.score >= 3 ? 'score-good' : 'score-low'}`}>
                         {job.score}
                       </span>
                     </td>
@@ -129,6 +156,22 @@ export function Jobs() {
           </div>
         )}
       </div>
+
+      {filtered.length > 0 ? (
+        <div className="list-footer">
+          <span className="muted">Showing {filtered.length} of {total} matched jobs</span>
+          {hasMore ? (
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={() => void loadMore()}
+              disabled={loadingMore}
+            >
+              {loadingMore ? 'Loading…' : 'Load more'}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }
