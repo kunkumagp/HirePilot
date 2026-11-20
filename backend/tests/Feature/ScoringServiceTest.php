@@ -78,7 +78,7 @@ class ScoringServiceTest extends TestCase
         ], $result->reasons);
     }
 
-    public function test_applies_location_uncertain_penalty(): void
+    public function test_location_uncertain_penalty_is_disabled_by_default(): void
     {
         $settings = UserSetting::factory()->make([
             'skills' => [],
@@ -87,8 +87,8 @@ class ScoringServiceTest extends TestCase
 
         $result = app(ScoringService::class)->score($this->makeJob(), $settings, true);
 
-        $this->assertSame(-2, $result->score);
-        $this->assertSame(['location uncertain (-2)'], $result->reasons);
+        $this->assertSame(0, $result->score);
+        $this->assertSame([], $result->reasons);
     }
 
     public function test_uses_custom_weights_from_settings(): void
@@ -111,6 +111,7 @@ class ScoringServiceTest extends TestCase
         $settings = UserSetting::factory()->make([
             'skills' => [''],
             'field' => 'sales',
+            'job_query' => null,
             'weights' => config('jobhunter.scoring.weights'),
         ]);
 
@@ -194,6 +195,7 @@ class ScoringServiceTest extends TestCase
         $settings = UserSetting::factory()->make([
             'skills' => [],
             'field' => 'web_development',
+            'job_query' => null,
             'job_category' => 'engineering',
             'job_subcategory' => 'frontend',
             'weights' => config('jobhunter.scoring.weights'),
@@ -216,6 +218,7 @@ class ScoringServiceTest extends TestCase
         $settings = UserSetting::factory()->make([
             'skills' => [],
             'field' => 'web_development',
+            'job_query' => null,
             'experience_level' => 'senior',
             'min_years_experience' => 3,
             'work_arrangement' => 'remote',

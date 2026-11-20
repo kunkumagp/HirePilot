@@ -38,8 +38,11 @@ class FilterPipelineTest extends TestCase
     {
         $this->travelTo('2026-11-18 12:00:00');
 
+        $settings = UserSetting::factory()->make(['max_age_days' => 14]);
+
         $result = app(FilterPipeline::class)->apply(
             $this->makeJob(['postedAt' => now()->subDays(15)]),
+            $settings,
         );
 
         $this->assertFalse($result->passed);
