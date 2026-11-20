@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>We Work Remotely: Remote programming jobs</title>
+    <link>https://weworkremotely.com/categories/remote-programming-jobs.rss</link>
+    <description>Sample feed for tests</description>
+    <item>
+      <title>Acme Remote: React Developer</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;p&gt;Build web applications with React.&lt;/p&gt;</description>
+      <pubDate>Wed, 18 Nov 2026 06:00:00 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/acme-react-developer</guid>
+      <link>https://weworkremotely.com/remote-jobs/acme-react-developer</link>
+    </item>
+    <item>
+      <title>Example Ops: Coordinator</title>
+      <region>USA Only</region>
+      <category>Other</category>
+      <description>&lt;p&gt;Coordinate operations.&lt;/p&gt;</description>
+      <pubDate>Tue, 17 Nov 2026 06:00:00 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/example-ops-coordinator</guid>
+      <link>https://weworkremotely.com/remote-jobs/example-ops-coordinator</link>
+    </item>
+  </channel>
+</rss>

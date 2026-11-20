@@ -1,0 +1,5 @@
+{{ $body }}
+
+--- Cover letter ---
+
+{{ $coverLetter }}
