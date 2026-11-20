@@ -62,7 +62,9 @@ export function Jobs() {
                 {filtered.map((job) => (
                   <tr key={job.id}>
                     <td className="job-cell">
-                      <strong>{job.title}</strong>
+                      <Link className="job-title-link" to={`/jobs/${job.id}`}>
+                        {job.title}
+                      </Link>
                       <span className="cell-sub">{job.company} · {job.source}</span>
                       {job.reasons.length > 0 ? (
                         <span className="cell-reasons">{job.reasons.join(' · ')}</span>
