@@ -162,8 +162,8 @@ return [
         'default_channels' => ['telegram'],
         'retry_attempts' => 3,
         'retry_backoff_ms' => 200,
-        // Local/Actions run synchronously; SaaS workers set this to true.
-        'use_queue' => false,
+        // Local/Actions run synchronously; SaaS workers set JOBHUNTER_USE_QUEUE=true.
+        'use_queue' => (bool) env('JOBHUNTER_USE_QUEUE', false),
     ],
 
     /*

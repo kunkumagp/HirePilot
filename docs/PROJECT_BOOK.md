@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 3.3 · Last updated: 2026-11-20
+> **Living document** · Version 3.4 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -342,6 +342,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **Post-release (2026-11-20) — relaxed matching + backfill:** පරිශීලකයාට පෙනුණේ ජොබ් 3ක් විතරයි. හේතුව තත්ත්වය නොව rules බව දත්ත වලින් තහවුරු වුණා — DB එකේ 304 ජොබ් තිබුණත් `max_age_days = 14` නිසා 83ක් පමණයි ඉතුරු වුණේ; `location_uncertain = -2` නිසා බොහෝ ජොබ් ඍණ ලකුණු ගත්තා. දැන් defaults ලිහිල් කළා: `max_age_days = 60`, `min_score = 3`, `location_uncertain = 0` සහ පුළුල් `job_query` (web, frontend, react, node, php, full stack, javascript, typescript). සියලු ස්ථිර ජොබ් වලටත් වර්තමාන නීති යොදන්න **`php artisan jobhunter:backfill`** command එක එකතු වුණා — ඒකෙන් admin ට 31ක් සහ default user ට 32ක් නව user_jobs හැදුණා. **PHPUnit: 90 tests, 316 assertions — pass.**
 
+**SaaS deploy සූදානම (2026-11-20):** සැබෑ server එකකට යන්න කලින් කරන්න පුළුවන් හැම දෙයක්ම සූදානම් කළා — production env example එක (Postgres, queue, CORS origins, Telegram, APP_KEY සඳහා placeholders), Supervisor queue-worker config එක, cron/scheduler example එක, සහ `JOBHUNTER_USE_QUEUE` env toggle එක. README එකේ දැන් පියවරෙන් පියවර සිංහල deployment guide එක තියෙනවා (config/route/view cache, frontend SPA fallback, සහ Actions එක්ක එකම DB එක ලියන ගැටලුව ගැනත් සටහන් කරලා). සැබෑ hosting ගිණුමක් සහ domain එකක් ලැබුණාම මේ පියවර අනුගමනය කරන්න පුළුවන්. **PHPUnit: 90 tests, 316 assertions — pass.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -449,6 +451,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 3.1 | 2026-11-20 | Matching rules ලිහිල් කරලා `jobhunter:backfill` command එක එකතු කළා — ජොබ් ගාණ 3→31 දක්වා වැඩි වුණා. |
 | 3.2 | 2026-11-20 | Jobs list එකට "Load more" + total count ("Showing 20 of 31") එකතු කළා — පිටුවකට 20ක් වෙනුවට ඔක්කොම බලන්න පුළුවන්. Keyword matching එක `LIKE '%web%'` (substring) බවත් තහවුරු කළා. |
 | 3.3 | 2026-11-20 | Jobs පිටුවේ header එක හදුවා (Run button එක වෙනම), පහළින් advanced filter bar එකක් එකතු කළා — search + salary + score + status, Reset button එක්ක. |
+| 3.4 | 2026-11-20 | SaaS deploy සූදානම: `backend/.env.production.example`, `deploy/crontab.example`, `deploy/supervisor.conf.example`, env-configurable queue toggle සහ පියවරෙන් පියවර සිංහල deployment guide එක README එකේ. |
 
 ---
 

@@ -1,0 +1,3 @@
+# Copy to the server crontab (crontab -e).
+# Runs Laravel's scheduler every minute; the schedule itself is in backend/routes/console.php.
+* * * * * cd /var/www/HirePilot/backend && php artisan schedule:run >> /dev/null 2>&1
