@@ -1,6 +1,6 @@
 # HirePilot — Project Book
 
-> **Living document** · Version 3.4 · Last updated: 2026-11-20
+> **Living document** · Version 3.5 · Last updated: 2026-11-20
 > **Status of implementation: Planning complete — coding has not started yet.**
 > This book contains **no sensitive data**: no API tokens, no passwords, no personal names, no private emails, no credentials of any kind. Configuration examples are generic placeholders only.
 >
@@ -344,6 +344,8 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 
 **SaaS deploy සූදානම (2026-11-20):** සැබෑ server එකකට යන්න කලින් කරන්න පුළුවන් හැම දෙයක්ම සූදානම් කළා — production env example එක (Postgres, queue, CORS origins, Telegram, APP_KEY සඳහා placeholders), Supervisor queue-worker config එක, cron/scheduler example එක, සහ `JOBHUNTER_USE_QUEUE` env toggle එක. README එකේ දැන් පියවරෙන් පියවර සිංහල deployment guide එක තියෙනවා (config/route/view cache, frontend SPA fallback, සහ Actions එක්ක එකම DB එක ලියන ගැටලුව ගැනත් සටහන් කරලා). සැබෑ hosting ගිණුමක් සහ domain එකක් ලැබුණාම මේ පියවර අනුගමනය කරන්න පුළුවන්. **PHPUnit: 90 tests, 316 assertions — pass.**
 
+**Post-release (2026-11-20) — Documents / ATS CV builder:** නව `documents` table එකක්, PDF-only upload API එකක්, `smalot/pdfparser` එකෙන් text extraction, සහ `CvDataExtractor` එකෙන් rule-based section parsing එක්ක (නම, ඊමේල්, දුරකථනය, Summary, Skills, Experience, Education) **/documents** පිටුව හදුවා. `phpoffice/phpword` (1.1 — `ext-gd` නැති නිසා නවතම 1.4 නෙවෙයි) එකෙන් DOCX සහ `dompdf` එකෙන් PDF ජනරේට් කරනවා. සැබෑ PDF එකකින් අන්තිමට පරීක්ෂා කළා: නම/ඊමේල්/සියලු skills නිවැරදිව උපුටාගත්තා, DOCX 7.5 KB සහ PDF 20 KB ගොනු බාගත වුණා. Template එක තවම සරල default එකයි — පරිශීලකයාගේ අභිමත design එකක් ලැබුණොත් ඒ අනුව වෙනස් කරන්න සූදානම්. **PHPUnit: 93 tests, 327 assertions — pass.**
+
 *(Milestone එකක් ඉවර වුණාම `⬜ Planned` වෙනුවට `✅ Done — <date>` දාන්න. අතරමග නම් `🔄 In progress` දාන්න.)*
 
 ---
@@ -452,6 +454,7 @@ Laravel එකේ ස්වාභාවික ව්‍යුහයේ දී fi
 | 3.2 | 2026-11-20 | Jobs list එකට "Load more" + total count ("Showing 20 of 31") එකතු කළා — පිටුවකට 20ක් වෙනුවට ඔක්කොම බලන්න පුළුවන්. Keyword matching එක `LIKE '%web%'` (substring) බවත් තහවුරු කළා. |
 | 3.3 | 2026-11-20 | Jobs පිටුවේ header එක හදුවා (Run button එක වෙනම), පහළින් advanced filter bar එකක් එකතු කළා — search + salary + score + status, Reset button එක්ක. |
 | 3.4 | 2026-11-20 | SaaS deploy සූදානම: `backend/.env.production.example`, `deploy/crontab.example`, `deploy/supervisor.conf.example`, env-configurable queue toggle සහ පියවරෙන් පියවර සිංහල deployment guide එක README එකේ. |
+| 3.5 | 2026-11-20 | Documents අංශය එකතු වුණා — PDF CV upload, rule-based data extraction, සහ ATS-friendly CV එක DOCX/PDF ලෙස download කිරීම. |
 
 ---
 

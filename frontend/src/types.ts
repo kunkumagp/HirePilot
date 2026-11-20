@@ -50,6 +50,28 @@ export interface JobDetail {
   created_at: string | null;
 }
 
+export interface DocumentItem {
+  id: number;
+  original_name: string;
+  size: number;
+  extracted_data: Record<string, unknown> | null;
+  created_at: string | null;
+}
+
+export interface CvData {
+  name: string;
+  email: string;
+  phone: string;
+  summary: string;
+  skills: string[];
+  experience: string;
+  education: string;
+  projects: string;
+  certifications: string;
+  languages: string;
+  awards: string;
+}
+
 export interface ApiNotification {
   id: string;
   type: string;
