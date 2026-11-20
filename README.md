@@ -100,7 +100,9 @@ cd backend
 php artisan jobhunter:run --dry-run
 ```
 
-Live run එකක් සඳහා `--dry-run` අයින් කරන්න. එතකොට ජොබ් `job_postings` එකට save වෙනවා. Sources එක් වරක් විතරක් fetch කරලා, ඊට පස්සේ සියලුම **active users** ගේම නීති අනුව ජොබ් ගළපා දැනුම් දෙනවා — එක user කෙනෙකුගේ settings අනිත් අයගේ ප්‍රතිඵල වලට බලපාන්නේ නෑ.
+UI එකෙන්ම ධාවනය කරන්න ඕනේ නම් **Jobs → "Run job search"** button එක ඔබන්න (ක්ෂණිකව API එක හරහා එම pipeline එකම ක්‍රියාත්මක වෙනවා).
+
+CLI එකෙන් live run එකක් සඳහා `--dry-run` අයින් කරන්න. එතකොට ජොබ් `job_postings` එකට save වෙනවා. Sources එක් වරක් විතරක් fetch කරලා, ඊට පස්සේ සියලුම **active users** ගේම නීති අනුව ජොබ් ගළපා දැනුම් දෙනවා — එක user කෙනෙකුගේ settings අනිත් අයගේ ප්‍රතිඵල වලට බලපාන්නේ නෑ.
 
 ---
 

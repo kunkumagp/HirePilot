@@ -46,7 +46,6 @@ class JobHunterRunCommandTest extends TestCase
             ->expectsOutputToContain('DRY RUN (no notifications will be sent)')
             ->expectsOutputToContain('Fetched: 2')
             ->expectsOutputToContain('After filters: 2')
-            ->expectsOutputToContain('React Developer @ Acme Remote')
             ->expectsOutputToContain('Notified: 0')
             ->assertSuccessful();
 

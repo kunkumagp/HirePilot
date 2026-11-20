@@ -14,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'me']);
 
+    Route::post('/jobs/run', [JobController::class, 'runSearch']);
     Route::get('/jobs', [JobController::class, 'index']);
     Route::get('/jobs/{job}', [JobController::class, 'show']);
     Route::post('/jobs/{job}/cover-letter', [JobController::class, 'regenerateCoverLetter']);
