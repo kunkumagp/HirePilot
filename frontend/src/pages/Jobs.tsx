@@ -7,6 +7,8 @@ export function Jobs() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [search, setSearch] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [running, setRunning] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -22,6 +24,25 @@ export function Jobs() {
     `${job.title} ${job.company} ${job.source}`.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const runSearch = async () => {
+    setRunning(true);
+    setNotice(null);
+
+    try {
+      const result = await api<{ fetched: number; new: number; matches: number }>('/jobs/run', {
+        method: 'POST',
+      });
+      setJobs((await api<Paginated<Job>>('/jobs')).data);
+      setNotice(
+        `Search complete — ${result.fetched} fetched from sources, ${result.new} new matches for you.`,
+      );
+    } catch (cause) {
+      setNotice(cause instanceof Error ? cause.message : 'Could not run the job search');
+    } finally {
+      setRunning(false);
+    }
+  };
+
   if (error) {
     return <div className="alert alert-error">{error}</div>;
   }
@@ -33,14 +54,21 @@ export function Jobs() {
           <h2>Your matched jobs</h2>
           <p className="muted">Scored, filtered and ranked by your rules.</p>
         </div>
-        <input
-          className="search-input"
-          type="search"
-          placeholder="Search jobs or companies…"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+        <div className="heading-actions">
+          <input
+            className="search-input"
+            type="search"
+            placeholder="Search jobs or companies…"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <button type="button" className="button button-primary" onClick={() => void runSearch()} disabled={running}>
+            {running ? 'Searching…' : 'Run job search'}
+          </button>
+        </div>
       </div>
+
+      {notice ? <p className="save-message">{notice}</p> : null}
 
       <div className="panel">
         {filtered.length === 0 ? (

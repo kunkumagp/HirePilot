@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserJob;
 use App\Services\CoverLetterService;
 use App\Services\JobDataFactory;
+use App\Services\JobRunService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,8 +21,14 @@ class JobController extends Controller
     public function __construct(
         private readonly CoverLetterService $coverLetters,
         private readonly JobDataFactory $jobDataFactory,
+        private readonly JobRunService $runService,
     ) {
         //
+    }
+
+    public function runSearch(): JsonResponse
+    {
+        return response()->json($this->runService->run(true));
     }
 
     public function index(Request $request): AnonymousResourceCollection

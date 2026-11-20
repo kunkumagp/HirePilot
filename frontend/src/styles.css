@@ -570,6 +570,13 @@ input {
   flex-wrap: wrap;
 }
 
+.heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .search-input {
   min-width: 260px;
   padding: 0.6rem 0.85rem;
